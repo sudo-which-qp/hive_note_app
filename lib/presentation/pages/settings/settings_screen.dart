@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:note_app/config/router/navigates_to.dart';
+import 'package:note_app/config/router/routes_name.dart';
 import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/presentation/pages/trash/trashed_notes.dart';
 import 'package:note_app/state/cubits/play_button_cubit/play_button_cubit.dart';
@@ -130,10 +132,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       style: TextStyle(),
                     ),
                     onTap: () {
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (_) {
-                        return const TrashedNotes();
-                      }));
+                      navigateTo(context, destination: RoutesName.trash_notes);
                     },
                   ),
                   const SizedBox(

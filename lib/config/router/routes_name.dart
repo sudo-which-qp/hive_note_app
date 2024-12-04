@@ -4,12 +4,15 @@ class RoutesName {
   static const String local_notes = 'local_notes';
   static const String cloud_notes = 'cloud_notes';
   static const String settings_screen = 'settings_screen';
+  static const String trash_notes = 'trash_notes';
   static const String wrapper = 'wrapper';
 
   // ends here
 
   // Local Notes Route
   static const String create_notes_screen = 'create_notes_screen';
+  static const String read_notes_screen = 'read_notes_screen';
+  static const String edit_notes_screen = 'edit_notes_screen';
 
   // ends here
 

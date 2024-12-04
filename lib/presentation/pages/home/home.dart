@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:note_app/config/router/navigates_to.dart';
 import 'package:note_app/config/router/routes_name.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
 import 'package:note_app/utils/colors/m_colors.dart';
@@ -32,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () {
-
+              navigateTo(context, destination: RoutesName.settings_screen);
             },
             icon: const Icon(
               Icons.settings,
@@ -69,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       : AppColors.cardColor,
                   child: InkWell(
                     onTap: () {
-
+                      navigateTo(context, destination: RoutesName.local_notes);
                     },
                     child: Container(
                       height: 200.h,

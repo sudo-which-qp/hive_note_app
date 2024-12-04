@@ -29,7 +29,26 @@ class Routes {
 
       case RoutesName.create_notes_screen:
         return MaterialPageRoute(builder: (_) => const CreateNoteScreen());
+
+      case RoutesName.trash_notes:
+        return MaterialPageRoute(builder: (_) => const TrashedNotes());
       //
+
+      // Local Notes
+      case RoutesName.read_notes_screen:
+        return MaterialPageRoute(
+            builder: (_) => ReadNotesScreen(
+                  note: args!['note'],
+                  noteKey: args['noteKey'],
+                ));
+
+      case RoutesName.edit_notes_screen:
+        return MaterialPageRoute(
+            builder: (_) => EditNoteScreen(
+              notes: args!['notes'],
+              noteKey: args['noteKey'],
+            ));
+      // ends here
 
       // Cloud Notes
       case RoutesName.cloud_create_notes_screen:
@@ -44,9 +63,10 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const RegisterScreen());
 
       case RoutesName.verify_code_screen:
-        return MaterialPageRoute(builder: (_) => VerifyCode(
-          from: args!['from'],
-        ));
+        return MaterialPageRoute(
+            builder: (_) => VerifyCode(
+                  from: args!['from'],
+                ));
       // ends here
 
       default:

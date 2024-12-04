@@ -15,14 +15,9 @@ class TrashedNotes extends StatefulWidget {
 
 class _TrashedNotesState extends State<TrashedNotes> {
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
   void removeFromTrashDialog(key, NoteModel? note) {
     final storeData = HiveManager().noteModelBox;
-    final deletedData = HiveManager().noteModelBox;
+    final deletedData = HiveManager().deleteNoteModelBox;
     showDialog(
       context: context,
       builder: (_) {
@@ -46,8 +41,8 @@ class _TrashedNotesState extends State<TrashedNotes> {
                         title: note!.title,
                         notes: note.notes,
                       );
-                      storeData!.add(noteToRecover);
-                      deletedData!.delete(key);
+                      storeData.add(noteToRecover);
+                      deletedData.delete(key);
                       Navigator.of(context).pop();
                       setState(() {});
                     },
@@ -73,7 +68,70 @@ class _TrashedNotesState extends State<TrashedNotes> {
                   ),
                   TextButton(
                     onPressed: () {
-                      storeData!.delete(key);
+                      storeData.delete(key);
+                      Navigator.of(context).pop();
+                      setState(() {});
+                    },
+                    child: const Text(
+                      'Yes',
+                      style: TextStyle(),
+                    ),
+                  ),
+                ],
+              );
+      },
+    );
+  }
+
+  void permanentlyDeleteDialog(key, NoteModel? note) {
+    final storeData = HiveManager().noteModelBox;
+    final deletedData = HiveManager().deleteNoteModelBox;
+    showDialog(
+      context: context,
+      builder: (_) {
+        return Platform.isAndroid
+            ? AlertDialog(
+                title: const Text('Hi, there'),
+                content:
+                    const Text('Are you sure you want to permanently delete this note?'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text(
+                      'No',
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      deletedData.delete(key);
+                      Navigator.of(context).pop();
+                      setState(() {});
+                    },
+                    child: const Text(
+                      'Yes',
+                    ),
+                  ),
+                ],
+              )
+            : CupertinoAlertDialog(
+                title: const Text('Warning'),
+                content:
+                    const Text('Are you sure you want to delete this note?'),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text(
+                      'No',
+                      style: TextStyle(),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      storeData.delete(key);
                       Navigator.of(context).pop();
                       setState(() {});
                     },
@@ -90,13 +148,12 @@ class _TrashedNotesState extends State<TrashedNotes> {
 
   @override
   Widget build(BuildContext context) {
-    final storeData = HiveManager().noteModelBox;
-    final deletedData = HiveManager().noteModelBox;
+    final deletedData = HiveManager().deleteNoteModelBox;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Trashed Note'),
       ),
-      body: deletedData!.isEmpty
+      body: deletedData.isEmpty
           ? const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -136,6 +193,9 @@ class _TrashedNotesState extends State<TrashedNotes> {
                         return GestureDetector(
                           onLongPress: () {
                             removeFromTrashDialog(key, note);
+                          },
+                          onDoubleTap: () {
+                            permanentlyDeleteDialog(key, note);
                           },
                           child: note!.title == null
                               ? Column(
@@ -186,7 +246,7 @@ class _TrashedNotesState extends State<TrashedNotes> {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              '${note.notes!.length >= 70 ? note.notes!.substring(0, 70) + '...' : note.notes}',
+                                              '${note.notes!.length >= 70 ? '${note.notes!.substring(0, 70)}...' : note.notes}',
                                               style: const TextStyle(
                                                 fontSize: 18,
                                               ),

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:note_app/config/router/navigates_to.dart';
 import 'package:note_app/data/models/local_note_model/note_model.dart';
 import 'package:note_app/helpers/hive_manager.dart';
-import 'package:note_app/presentation/pages/local_notes/read_notes_screens.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
 import 'package:provider/provider.dart';
 

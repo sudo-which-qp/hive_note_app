@@ -2,6 +2,8 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:note_app/config/router/navigates_to.dart';
+import 'package:note_app/config/router/routes_name.dart';
 import 'package:note_app/data/models/local_note_model/note_model.dart';
 import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/state/cubits/play_button_cubit/play_button_cubit.dart';
@@ -196,32 +198,36 @@ class _ReadNotesScreenState extends State<ReadNotesScreen> {
         centerTitle: true,
         actions: <Widget>[
           isLoading == false
-              ? hiveData.get(tokenKey) == null ? const SizedBox() : IconButton(
-                  icon: const Icon(Icons.cloud_upload_outlined),
-                  onPressed: isLoading == false
-                      ? () {
-                          // uploadNote();
-                        }
-                      : null,
-                )
+              ? hiveData.get(tokenKey) == null
+                  ? const SizedBox()
+                  : IconButton(
+                      icon: const Icon(Icons.cloud_upload_outlined),
+                      onPressed: isLoading == false
+                          ? () {
+                              // uploadNote();
+                            }
+                          : null,
+                    )
               : SizedBox(
                   width: 20.w,
                   height: 20.w,
                   child: CircularProgressIndicator(
-                    color: context.watch<ThemeCubit>().state.isDarkTheme == false
-                        ? AppColors.defaultBlack
-                        : AppColors.defaultWhite,
+                    color:
+                        context.watch<ThemeCubit>().state.isDarkTheme == false
+                            ? AppColors.defaultBlack
+                            : AppColors.defaultWhite,
                   ),
                 ),
           IconButton(
             icon: const Icon(Icons.mode_edit),
             onPressed: () {
               Navigator.pop(context);
-              // navigateTo(context,
-              //     destination: EditNoteScreen(
-              //       notes: widget.note,
-              //       noteKey: widget.noteKey,
-              //     ));
+              navigateTo(context,
+                  destination: RoutesName.edit_notes_screen,
+                  arguments: {
+                    'notes': widget.note,
+                    'noteKey': widget.noteKey,
+                  });
             },
           )
         ],
@@ -254,20 +260,21 @@ class _ReadNotesScreenState extends State<ReadNotesScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: context.watch<PlayButtonCubit>().state.canPlay == false
-          ? FloatingActionButton(
-              backgroundColor: Colors.white60,
-              onPressed: () {
-                ttsState == TtsState.stopped ? _speak() : _stop();
-              },
-              child: Icon(
-                ttsState == TtsState.stopped
-                    ? Icons.play_circle_outline
-                    : Icons.stop_circle_outlined,
-                color: Colors.black45,
-              ),
-            )
-          : null,
+      floatingActionButton:
+          context.watch<PlayButtonCubit>().state.canPlay == false
+              ? FloatingActionButton(
+                  backgroundColor: Colors.white60,
+                  onPressed: () {
+                    ttsState == TtsState.stopped ? _speak() : _stop();
+                  },
+                  child: Icon(
+                    ttsState == TtsState.stopped
+                        ? Icons.play_circle_outline
+                        : Icons.stop_circle_outlined,
+                    color: Colors.black45,
+                  ),
+                )
+              : null,
     );
   }
 }
