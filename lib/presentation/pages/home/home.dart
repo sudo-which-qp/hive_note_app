@@ -1,11 +1,11 @@
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
+import 'package:note_app/config/router/routes_name.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
+import 'package:note_app/utils/colors/m_colors.dart';
 import 'package:note_app/utils/greetings.dart';
 import 'package:provider/provider.dart';
 
@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () {
-              context.pushNamed(RouteName.settings_screen);
+
             },
             icon: const Icon(
               Icons.settings,
@@ -65,11 +65,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   color: context.watch<ThemeCubit>().state.isDarkTheme == false
-                      ? backColor.withOpacity(0.7)
-                      : cardColor,
+                      ? AppColors.primaryColor.withOpacity(0.7)
+                      : AppColors.cardColor,
                   child: InkWell(
                     onTap: () {
-                      context.pushNamed(RouteName.local_notes);
+
                     },
                     child: Container(
                       height: 200.h,
@@ -85,8 +85,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               Icons.sd_storage_outlined,
                               size: 100.r,
                               color: context.watch<ThemeCubit>().state.isDarkTheme == false
-                                  ? defaultBlack
-                                  : defaultWhite,
+                                  ? AppColors.defaultBlack
+                                  : AppColors.defaultWhite,
                             ),
                             Text(
                               'Local Note',
@@ -109,11 +109,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   color: context.watch<ThemeCubit>().state.isDarkTheme == false
-                      ? backColor.withOpacity(0.7)
-                      : cardColor,
+                      ? AppColors.primaryColor.withOpacity(0.7)
+                      : AppColors.cardColor,
                   child: InkWell(
                     onTap: () {
-                      context.pushNamed(RouteName.wrapper);
+
                     },
                     child: Container(
                       height: 200.h,
@@ -129,8 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               Icons.cloud_queue_outlined,
                               size: 100.r,
                               color: context.watch<ThemeCubit>().state.isDarkTheme == false
-                                  ? defaultBlack
-                                  : defaultWhite,
+                                  ? AppColors.defaultBlack
+                                  : AppColors.defaultWhite,
                             ),
                             Text(
                               'Cloud Note',

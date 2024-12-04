@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:note_app/data/models/cloud_note_models/cloud_note_model.dart';
 import 'package:note_app/presentation/pages/cloud_notes/cloud_edit_note.dart';
-import 'package:note_app/m_functions/navigate_to.dart';
 import 'package:note_app/state/cubits/play_button_cubit/play_button_cubit.dart';
 import 'package:note_app/utils/const_values.dart';
 import 'package:provider/provider.dart';
@@ -194,11 +193,11 @@ class _CloudReadNoteState extends State<CloudReadNote> {
             icon: const Icon(Icons.mode_edit),
             onPressed: () {
               Navigator.pop(context);
-              navigateTo(context,
-                  destination: CloudEditNote(
-                    notes: widget.note,
-                    noteKey: widget.noteKey,
-                  ));
+              // navigateTo(context,
+              //     destination: CloudEditNote(
+              //       notes: widget.note,
+              //       noteKey: widget.noteKey,
+              //     ));
             },
           )
         ],

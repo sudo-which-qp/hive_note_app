@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:note_app/app/resources/home/views/cloud_notes/models/cloud_note_model.dart';
+import 'package:note_app/data/models/cloud_note_models/cloud_note_model.dart';
 import 'package:note_app/data/models/cloud_note_models/user_model.dart';
-import 'package:note_app/app/resources/home/views/local_notes/models/note_model.dart';
+import 'package:note_app/data/models/local_note_model/note_model.dart';
 import 'package:note_app/utils/const_values.dart';
 import 'package:path_provider/path_provider.dart';
 

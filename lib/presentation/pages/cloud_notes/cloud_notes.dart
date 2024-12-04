@@ -3,19 +3,12 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:note_app/app/helpers/hive_manager.dart';
-import 'package:note_app/app/resources/home/views/cloud_notes/models/cloud_note_model.dart';
-import 'package:note_app/app/resources/home/views/cloud_notes/views/cloud_read_note_screen.dart';
-import 'package:note_app/app/router/route_name.dart';
-import 'package:note_app/m_functions/navigate_to.dart';
-import 'package:note_app/request/get_request.dart';
-import 'package:note_app/request/post_request.dart';
+import 'package:note_app/config/router/routes_name.dart';
+import 'package:note_app/data/models/cloud_note_models/cloud_note_model.dart';
+import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
-import 'package:note_app/utils/const_values.dart';
-import 'package:note_app/utils/tools/message_dialog.dart';
+import 'package:note_app/utils/colors/m_colors.dart';
 import 'package:provider/provider.dart';
 
 class CloudNotesScreen extends StatefulWidget {
@@ -27,85 +20,6 @@ class CloudNotesScreen extends StatefulWidget {
 
 class _CloudNotesScreenState extends State<CloudNotesScreen> {
   bool isLoading = false;
-
-  Future fetchNotes() async {
-    final userModel = HiveManager().userModelBox;
-    final cloudNoteModel = HiveManager().cloudNoteModelBox;
-
-    var res = await GetRequest.makeGetRequest(
-      requestEnd: 'user/fetch_notes',
-      bearer: userModel.get(tokenKey)!.accessToken,
-      context: context,
-    );
-
-    logger.i(res);
-
-    var status = res['status'];
-    var msg = res['message'];
-
-    try {
-      if (status == 200) {
-        List<CloudNoteModel> cloudNotes = CloudNoteModel.parseResponse(res);
-        await cloudNoteModel.clear();
-        await cloudNoteModel.addAll(cloudNotes);
-
-        setState(() {});
-        logger.i('Notes stored successfully');
-      }
-    } catch (error) {
-      if (error.toString().contains('Unhandled Exception')) {
-        showError('Something went wrong, it\'s not you it\'s us.');
-      }
-    }
-  }
-
-  Future trashNote(String? uuid) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    final userModel = HiveManager().userModelBox;
-
-    var params = {
-      'note_uuid': '$uuid',
-    };
-
-    var res = await PostRequest.makePostRequest(
-      requestEnd: 'user/trash_note',
-      params: params,
-      context: context,
-      bearer: userModel.get(tokenKey)!.accessToken,
-    );
-
-    logger.i(res);
-
-    var status = res['status'];
-    var msg = res['message'];
-
-    try {
-      if (status == 200) {
-        Fluttertoast.showToast(
-          msg: '$msg',
-          toastLength: Toast.LENGTH_SHORT,
-        );
-
-        if (mounted) {
-          fetchNotes();
-        }
-      }
-    } catch (error) {
-      if (error.toString().contains('Unhandled Exception')) {
-        showError('Something went wrong, it\'s not you it\'s us.');
-      }
-      setState(() {
-        isLoading = false;
-      });
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
 
   void deleteDialog(key, CloudNoteModel note) {
     final storeData = HiveManager().cloudNoteModelBox;
@@ -131,7 +45,7 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
                       storeData.delete(key);
                       Navigator.of(context).pop();
                       setState(() {});
-                      trashNote(note.uuid);
+                      // trashNote(note.uuid);
                     },
                     child: const Text(
                       'Yes',
@@ -158,7 +72,7 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
                       storeData.delete(key);
                       Navigator.of(context).pop();
                       setState(() {});
-                      trashNote(note.uuid);
+                      // trashNote(note.uuid);
                     },
                     child: const Text(
                       'Yes',
@@ -175,7 +89,7 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    fetchNotes();
+    // fetchNotes();
   }
 
   @override
@@ -189,8 +103,7 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
           if (Platform.isIOS)
             IconButton(
               onPressed: () {
-                context.pop();
-                context.pushNamed(RouteName.cloud_create_notes_screen);
+
               },
               icon: const Icon(
                 CupertinoIcons.add_circled,
@@ -202,15 +115,14 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
       floatingActionButton: Platform.isAndroid
           ? FloatingActionButton(
               onPressed: () {
-                context.pop();
-                context.pushNamed(RouteName.cloud_create_notes_screen);
+
               },
               backgroundColor:
-              context.watch<ThemeCubit>().state.isDarkTheme == true ? cardColor : backColor,
+              context.watch<ThemeCubit>().state.isDarkTheme == true ? AppColors.cardColor : AppColors.primaryColor,
               tooltip: 'Add Note',
-              child: const Icon(
+              child: Icon(
                 Icons.add,
-                color: defaultBlack,
+                color: AppColors.defaultBlack,
               ),
             )
           : null,
@@ -239,11 +151,11 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
                         final CloudNoteModel? note = notes.get(key);
                         return GestureDetector(
                           onTap: () {
-                            navigateTo(context,
-                                destination: CloudReadNote(
-                                  note: note,
-                                  noteKey: key,
-                                ));
+                            // navigateTo(context,
+                            //     destination: CloudReadNote(
+                            //       note: note,
+                            //       noteKey: key,
+                            //     ));
                           },
                           onLongPress: () {
                             deleteDialog(key, note);
@@ -264,8 +176,8 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
                                     width: MediaQuery.of(context).size.width,
                                     decoration: BoxDecoration(
                                       color: context.watch<ThemeCubit>().state.isDarkTheme == false
-                                          ? backColor
-                                          : Colors.grey[900],
+                                          ? AppColors.primaryColor
+                                          : AppColors.cardGray,
                                     ),
                                     child: Text(
                                       note!.title == null || note.title == ''

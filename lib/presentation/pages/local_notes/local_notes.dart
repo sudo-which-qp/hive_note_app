@@ -5,20 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:note_app/app/helpers/hive_manager.dart';
-import 'package:note_app/app/resources/home/views/local_notes/models/note_model.dart';
-import 'package:note_app/presentation/pages/local_notes/read_notes_screens.dart';
-import 'package:note_app/app/router/route_name.dart';
-import 'package:note_app/m_functions/navigate_to.dart';
+import 'package:note_app/config/router/routes_name.dart';
+import 'package:note_app/data/models/local_note_model/note_model.dart';
+import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/state/cubits/note_style_cubit/note_style_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
-import 'package:note_app/utils/const_values.dart';
+import 'package:note_app/utils/colors/m_colors.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../presentation/pages/local_notes/create_note_screen.dart';
 
 class LocalNotesScreen extends StatefulWidget {
   const LocalNotesScreen({Key? key}) : super(key: key);
@@ -115,8 +111,7 @@ class _LocalNotesScreenState extends State<LocalNotesScreen> {
           if (Platform.isIOS)
             IconButton(
               onPressed: () {
-                context.pop();
-                context.pushNamed(RouteName.create_notes_screen);
+
               },
               icon: const Icon(
                 CupertinoIcons.add_circled,
@@ -138,14 +133,13 @@ class _LocalNotesScreenState extends State<LocalNotesScreen> {
       floatingActionButton: Platform.isAndroid
           ? FloatingActionButton(
               onPressed: () {
-                context.pop();
-                context.pushNamed(RouteName.create_notes_screen);
+
               },
-              backgroundColor: context.watch<ThemeCubit>().state.isDarkTheme == true ? cardColor : backColor,
+              backgroundColor: context.watch<ThemeCubit>().state.isDarkTheme == true ? AppColors.cardColor : AppColors.primaryColor,
               tooltip: 'Add Note',
-              child: const Icon(
+              child: Icon(
                 Icons.add,
-                color: defaultBlack,
+                color: AppColors.defaultBlack,
               ),
             )
           : null,
@@ -196,10 +190,10 @@ class _LocalNotesScreenState extends State<LocalNotesScreen> {
                               final NoteModel? note = notes.get(key);
                               return GestureDetector(
                                 onTap: () {
-                                  navigateTo(context, destination: ReadNotesScreen(
-                                    note: note,
-                                    noteKey: key,
-                                  ));
+                                  // navigateTo(context, destination: ReadNotesScreen(
+                                  //   note: note,
+                                  //   noteKey: key,
+                                  // ));
                                 },
                                 onLongPress: () {
                                   deleteDialog(key, note!);
@@ -240,7 +234,7 @@ class _LocalNotesScreenState extends State<LocalNotesScreen> {
                                                 decoration: BoxDecoration(
                                                   color:
                                                   context.watch<ThemeCubit>().state.isDarkTheme == false
-                                                          ? backColor
+                                                          ? AppColors.primaryColor
                                                           : Colors.grey[900],
                                                 ),
                                                 child: Text(
@@ -288,10 +282,10 @@ class _LocalNotesScreenState extends State<LocalNotesScreen> {
                               final NoteModel? note = notes.get(key);
                               return GestureDetector(
                                 onTap: () {
-                                  navigateTo(context, destination: ReadNotesScreen(
-                                    note: note,
-                                    noteKey: key,
-                                  ));
+                                  // navigateTo(context, destination: ReadNotesScreen(
+                                  //   note: note,
+                                  //   noteKey: key,
+                                  // ));
                                 },
                                 onLongPress: () {
                                   deleteDialog(key, note!);

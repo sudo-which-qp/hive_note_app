@@ -1,14 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/presentation/pages/trash/trashed_notes.dart';
-import 'package:note_app/request/get_request.dart';
 import 'package:note_app/state/cubits/play_button_cubit/play_button_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
 import 'package:note_app/utils/const_values.dart';
-import 'package:note_app/utils/tools/message_dialog.dart';
+import 'package:note_app/utils/tools/sized_box_ex.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
@@ -27,45 +25,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   bool isLoading = false;
   bool isLoadingRemoveKeys = false;
-
-  Future logout() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    final userModel = HiveManager().userModelBox;
-
-    var res = await GetRequest.makeGetRequest(
-      requestEnd: 'user/logout',
-      bearer: userModel.get(tokenKey)!.accessToken,
-      context: context,
-    );
-
-    logger.i(res);
-
-    var status = res['status'];
-    var msg = res['message'];
-
-    try {
-      if (status == 202) {
-        userModel.delete(tokenKey);
-        if (mounted) {
-          context.pop();
-        }
-      }
-    } catch (error) {
-      if (error.toString().contains('Unhandled Exception')) {
-        showError('Something went wrong, it\'s not you it\'s us.');
-      }
-      setState(() {
-        isLoading = false;
-      });
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
 
   @override
   void initState() {
@@ -158,9 +117,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  10.toHeight,
                   ListTile(
                     leading: const Icon(Icons.delete),
                     title: const Text(
@@ -195,7 +152,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                           onTap: isLoading == false
                               ? () {
-                                  logout();
+                                  // logout();
                                 }
                               : null,
                         ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:note_app/app/helpers/hive_manager.dart';
-import 'package:note_app/app/resources/home/views/cloud_notes/auth/login_screen.dart';
+import 'package:note_app/helpers/hive_manager.dart';
+import 'package:note_app/presentation/pages/cloud_notes/auth/login_screen.dart';
 import 'package:note_app/presentation/pages/cloud_notes/cloud_notes.dart';
 import 'package:note_app/data/models/cloud_note_models/user_model.dart';
 import 'package:note_app/utils/const_values.dart';

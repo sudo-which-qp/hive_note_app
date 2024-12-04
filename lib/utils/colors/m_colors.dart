@@ -4,6 +4,7 @@ import 'package:note_app/utils/tools/hex_to_color.dart';
 class AppColors {
   static Color darkColor = hexToColor('#333333');
   static Color? cardColor = Colors.grey[850];
+  static Color? cardGray = Colors.grey[900];
 
 //colors for the app
   static Color primaryColor = hexToColor('#E0D3AFFF');

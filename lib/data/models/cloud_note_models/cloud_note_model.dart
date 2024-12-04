@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part '../../../app/resources/home/views/cloud_notes/models/cloud_note_model.g.dart';
+part 'cloud_note_model.g.dart';
 
 @HiveType(typeId: 1)
 class CloudNoteModel {

@@ -4,14 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:go_router/go_router.dart';
-import 'package:note_app/app/helpers/hive_manager.dart';
-import 'package:note_app/app/router/route_name.dart';
-import 'package:note_app/request/post_request.dart';
+import 'package:note_app/presentation/widget/mbutton.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
+import 'package:note_app/utils/colors/m_colors.dart';
 import 'package:note_app/utils/const_values.dart';
-import 'package:note_app/utils/tools/message_dialog.dart';
-import 'package:note_app/widget/mbutton.dart';
 import 'package:otp_text_field_v2/otp_text_field_v2.dart';
 import 'package:provider/provider.dart';
 
@@ -58,95 +54,6 @@ class _VerifyCodeState extends State<VerifyCode> {
     });
   }
 
-  Future sendCode() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    final userModel = HiveManager().userModelBox;
-
-    var params = {
-      'email': '${widget.email}',
-    };
-
-    var res = await PostRequest.makePostRequest(
-      requestEnd: 'user/auth/send_code',
-      params: params,
-      context: context,
-    );
-
-    logger.i(res);
-
-    var status = res['status'];
-    var msg = res['message'];
-
-    try {
-      if (status == 200) {
-        startTimer();
-        showSuccess('Code Sent');
-      }
-    } catch (error) {
-      if (error.toString().contains('Unhandled Exception')) {
-        showError('Something went wrong, it\'s not you it\'s us.');
-      }
-      setState(() {
-        isLoading = false;
-      });
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  Future verifyCode() async {
-    setState(() {
-      isLoadingVerify = true;
-    });
-
-    final userModel = HiveManager().userModelBox;
-
-    var params = {
-      'otp_code': code,
-    };
-
-    var res = await PostRequest.makePostRequest(
-      requestEnd: 'user/auth/verify_code',
-      params: params,
-      context: context,
-    );
-
-    logger.i(res);
-
-    var status = res['status'];
-    var msg = res['message'];
-
-    try {
-      if (status == 200) {
-        showSuccess('$msg');
-        if(mounted) {
-          if(widget.from == 'register_screen') {
-            context.pop();
-            context.pushReplacementNamed(RouteName.cloud_notes);
-          } else {
-            Navigator.pop(context);
-          }
-        }
-      }
-    } catch (error) {
-      if (error.toString().contains('Unhandled Exception')) {
-        showError('Something went wrong, it\'s not you it\'s us.');
-      }
-      setState(() {
-        isLoadingVerify = false;
-      });
-    } finally {
-      setState(() {
-        isLoadingVerify = false;
-      });
-    }
-  }
-
   @override
   void dispose() {
     _timer?.cancel();
@@ -173,7 +80,7 @@ class _VerifyCodeState extends State<VerifyCode> {
               otpFieldStyle: OtpFieldStyle(
                 backgroundColor: transparent,
                 enabledBorderColor:
-                context.watch<ThemeCubit>().state.isDarkTheme == false ? defaultBlack : defaultWhite,
+                context.watch<ThemeCubit>().state.isDarkTheme == false ? AppColors.defaultBlack : AppColors.defaultWhite,
               ),
               outlineBorderRadius: 8,
               style: TextStyle(
@@ -209,7 +116,6 @@ class _VerifyCodeState extends State<VerifyCode> {
                         );
                         return;
                       }
-                      verifyCode();
                     }
                   : null,
             ),
@@ -220,7 +126,6 @@ class _VerifyCodeState extends State<VerifyCode> {
               onTap: _remainingSeconds == 0
                   ? isLoading == false
                       ? () {
-                          sendCode();
                         }
                       : null
                   : null,

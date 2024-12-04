@@ -3,12 +3,8 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:go_router/go_router.dart';
-import 'package:note_app/app/helpers/hive_manager.dart';
-import 'package:note_app/app/router/route_name.dart';
-import 'package:note_app/request/post_request.dart';
+import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
-import 'package:note_app/utils/const_values.dart';
 import 'package:provider/provider.dart';
 
 class CloudCreateNote extends StatefulWidget {
@@ -30,41 +26,21 @@ class _CloudCreateNoteState extends State<CloudCreateNote> {
 
   final goToNotes = FocusNode();
 
-  Future createNote(String? title, String? notes) async {
-
-    final userModel = HiveManager().userModelBox;
-    final storeData = HiveManager().noteModelBox;
-
-    var params = {
-      'note_title': '$title',
-      'note_content': '$notes',
-    };
-
-    var res = await PostRequest.makePostRequest(
-      requestEnd: 'user/create_notes',
-      params: params,
-      context: context,
-      bearer: userModel.get(tokenKey)!.accessToken,
-    );
-
-    logger.i(res);
-  }
-
   Future<bool> checkIfNoteIsNotEmptyWhenGoingBack() async {
     final storeData = HiveManager().cloudNoteModelBox;
     if (_noteText.text.isNotEmpty || _noteTitle.text.isNotEmpty) {
       final String noteTitle = _noteTitle.text;
       final String note = _noteText.text;
 
-      createNote(noteTitle, note);
+      // createNote(noteTitle, note);
 
       await Fluttertoast.showToast(
         msg: 'Note Saved',
         toastLength: Toast.LENGTH_SHORT,
       );
       if(mounted) {
-        context.pop();
-        context.pushNamed(RouteName.cloud_notes);
+        // context.pop();
+        // context.pushNamed(RoutesName.cloud_notes);
       }
       _isNotEmpty = true;
     } else {
@@ -73,8 +49,8 @@ class _CloudCreateNoteState extends State<CloudCreateNote> {
         toastLength: Toast.LENGTH_SHORT,
       );
       if(mounted) {
-        context.pop();
-        context.pushNamed(RouteName.cloud_notes);
+        // context.pop();
+        // context.pushNamed(RoutesName.cloud_notes);
       }
       _isNotEmpty = false;
     }
@@ -93,14 +69,14 @@ class _CloudCreateNoteState extends State<CloudCreateNote> {
       final String noteTitle = _noteTitle.text;
       final String note = _noteText.text;
 
-      createNote(noteTitle, note);
+      // createNote(noteTitle, note);
 
       Fluttertoast.showToast(
         msg: 'Note Saved',
         toastLength: Toast.LENGTH_SHORT,
       );
-      context.pop();
-      context.pushNamed(RouteName.cloud_notes);
+      // context.pop();
+      // context.pushNamed(RoutesName.cloud_notes);
     }
   }
 

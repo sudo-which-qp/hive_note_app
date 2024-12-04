@@ -2,15 +2,12 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:note_app/app/helpers/hive_manager.dart';
-import 'package:note_app/presentation/pages/local_notes/edit_note_screen.dart';
-import 'package:note_app/app/resources/home/views/local_notes/models/note_model.dart';
-import 'package:note_app/m_functions/navigate_to.dart';
-import 'package:note_app/request/post_request.dart';
+import 'package:note_app/data/models/local_note_model/note_model.dart';
+import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/state/cubits/play_button_cubit/play_button_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
+import 'package:note_app/utils/colors/m_colors.dart';
 import 'package:note_app/utils/const_values.dart';
-import 'package:note_app/utils/tools/message_dialog.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
@@ -186,55 +183,6 @@ class _ReadNotesScreenState extends State<ReadNotesScreen> {
 
   bool isLoading = false;
 
-  Future uploadNote() async {
-    setState(() {
-      isLoading = true;
-    });
-
-    final userModel = HiveManager().userModelBox;
-    final storeData = HiveManager().noteModelBox;
-
-    var params = {
-      'note_title': '${widget.note!.title}',
-      'note_content': '${widget.note!.notes}',
-    };
-
-    var res = await PostRequest.makePostRequest(
-      requestEnd: 'user/move_to_cloud',
-      params: params,
-      context: context,
-      bearer: userModel.get(tokenKey)!.accessToken,
-    );
-
-    logger.i(res);
-
-    var status = res['status'];
-    var msg = res['message'];
-
-    try {
-      if (status == 200) {
-        logger.i('Yes');
-        showSuccess('Uploaded');
-
-        if (mounted) {
-          Navigator.pop(context);
-          storeData.delete(widget.noteKey);
-        }
-      }
-    } catch (error) {
-      if (error.toString().contains('Unhandled Exception')) {
-        showError('Something went wrong, it\'s not you it\'s us.');
-      }
-      setState(() {
-        isLoading = false;
-      });
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final hiveData = HiveManager().userModelBox;
@@ -252,7 +200,7 @@ class _ReadNotesScreenState extends State<ReadNotesScreen> {
                   icon: const Icon(Icons.cloud_upload_outlined),
                   onPressed: isLoading == false
                       ? () {
-                          uploadNote();
+                          // uploadNote();
                         }
                       : null,
                 )
@@ -261,19 +209,19 @@ class _ReadNotesScreenState extends State<ReadNotesScreen> {
                   height: 20.w,
                   child: CircularProgressIndicator(
                     color: context.watch<ThemeCubit>().state.isDarkTheme == false
-                        ? defaultBlack
-                        : defaultWhite,
+                        ? AppColors.defaultBlack
+                        : AppColors.defaultWhite,
                   ),
                 ),
           IconButton(
             icon: const Icon(Icons.mode_edit),
             onPressed: () {
               Navigator.pop(context);
-              navigateTo(context,
-                  destination: EditNoteScreen(
-                    notes: widget.note,
-                    noteKey: widget.noteKey,
-                  ));
+              // navigateTo(context,
+              //     destination: EditNoteScreen(
+              //       notes: widget.note,
+              //       noteKey: widget.noteKey,
+              //     ));
             },
           )
         ],

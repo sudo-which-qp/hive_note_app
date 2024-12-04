@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:note_app/app/helpers/hive_manager.dart';
 import 'package:note_app/app/src/app.dart';
+import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/state/cubits/note_style_cubit/note_style_cubit.dart';
 import 'package:note_app/state/cubits/play_button_cubit/play_button_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';

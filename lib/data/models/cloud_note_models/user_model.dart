@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part '../../../app/resources/home/views/cloud_notes/models/user_model.g.dart';
+part 'user_model.g.dart';
 
 @HiveType(typeId: 2)
 class UserModel {

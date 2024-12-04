@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:note_app/app/helpers/hive_manager.dart';
-import 'package:note_app/app/resources/home/views/cloud_notes/models/cloud_note_model.dart';
-import 'package:note_app/app/resources/home/views/cloud_notes/views/cloud_read_note_screen.dart';
+import 'package:note_app/config/router/navigates_to.dart';
+import 'package:note_app/data/models/cloud_note_models/cloud_note_model.dart';
+import 'package:note_app/helpers/hive_manager.dart';
+import 'package:note_app/presentation/pages/cloud_notes/cloud_read_note_screen.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
-import 'package:note_app/m_functions/navigate_to.dart';
-import 'package:note_app/request/post_request.dart';
 import 'package:note_app/utils/const_values.dart';
 import 'package:provider/provider.dart';
 
@@ -35,25 +34,6 @@ class _CloudEditNoteState extends State<CloudEditNote> {
 
   var _isInit = true;
 
-  Future editNote(String? title, String? notes, String? uuid) async {
-    final userModel = HiveManager().userModelBox;
-    final storeData = HiveManager().noteModelBox;
-
-    var params = {
-      'note_title': '$title',
-      'note_content': '$notes',
-      'note_uuid': '$uuid',
-    };
-
-    var res = await PostRequest.makePostRequest(
-      requestEnd: 'user/edit_notes',
-      params: params,
-      context: context,
-      bearer: userModel.get(tokenKey)!.accessToken,
-    );
-
-    logger.i(res);
-  }
 
   @override
   void didChangeDependencies() {
@@ -133,7 +113,7 @@ class _CloudEditNoteState extends State<CloudEditNote> {
                   notes: note!,
                 );
 
-                editNote(title, note, widget.notes!.uuid);
+                // editNote(title, note, widget.notes!.uuid);
 
                 storeData.put(key, noteM);
                 Fluttertoast.showToast(
@@ -141,8 +121,8 @@ class _CloudEditNoteState extends State<CloudEditNote> {
                   toastLength: Toast.LENGTH_SHORT,
                 );
                 Navigator.pop(context);
-                navigateTo(context,
-                    destination: CloudReadNote(note: noteM, noteKey: key));
+                // navigateTo(context,
+                //     destination: CloudReadNote(note: noteM, noteKey: key));
               }
             },
             icon: Icon(
