@@ -8,17 +8,8 @@ class ThemeCubit extends Cubit<ThemeState> {
   String key = 'appTheme';
   SharedPreferences? _pref;
 
-  ThemeCubit() : super(ThemeState.initial()) {
-    _loadFromPref();
-  }
-
-  /*
-  there seems to be an issue with the cubit setup for the theme state
-  changing. what I noticed was when the app loads up, the theme flashes a bit
-  as if it is a bit confused on which state it should be either dark or light.
-
-  I hope to figure this out soon, but for now we will work with this.
-  */
+  ThemeCubit(this._pref)
+      : super(ThemeState(isDarkTheme: _pref!.getBool('appTheme') ?? false));
 
   // initialize the shared Preference Instance
   Future<void> _initPrefs() async {
@@ -26,9 +17,12 @@ class ThemeCubit extends Cubit<ThemeState> {
   }
 
   // Load the data from it and check the current value
+  /*
+  This function is no longer needed but is kept for future reference
+   */
   Future<void> _loadFromPref() async {
     await _initPrefs();
-    final bool isDarkTheme = _pref!.getBool(key) ?? false;
+    final bool isDarkTheme = _pref?.getBool(key) ?? false;
     emit(state.copyWith(isDarkTheme: isDarkTheme));
   }
 
@@ -39,10 +33,9 @@ class ThemeCubit extends Cubit<ThemeState> {
   }
 
   // toggle between light or dark mode
-  void toggleTheme() {
+  Future<void> toggleTheme() async {
     final newThemeValue = !state.isDarkTheme;
-    _saveToPref(newThemeValue);
+    _pref!.setBool(key, newThemeValue);
     emit(state.copyWith(isDarkTheme: newThemeValue));
   }
-
 }
