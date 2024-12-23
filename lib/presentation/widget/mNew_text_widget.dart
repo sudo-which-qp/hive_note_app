@@ -7,6 +7,7 @@ import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
 import 'package:note_app/utils/colors/m_colors.dart';
 import 'package:note_app/utils/const_values.dart';
 import 'package:note_app/utils/tools/money_formatter.dart';
+import 'package:note_app/utils/tools/sized_box_ex.dart';
 
 class MNewTextField extends StatefulWidget {
   final double? height;
@@ -230,11 +231,10 @@ class _MNewTextFieldState extends State<MNewTextField> {
             color: state.isDarkTheme == false ? AppColors.defaultBlack : AppColors.defaultWhite,
           ),
         ),
+
         widget.removeBottomPadding == true
             ? const SizedBox()
-            : SizedBox(
-                height: 20.h,
-              ),
+            : 20.toHeight,
       ],
     );
   },

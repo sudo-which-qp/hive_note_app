@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:note_app/data/models/local_note_model/note_model.dart';
 import 'package:note_app/helpers/hive_manager.dart';
+import 'package:note_app/utils/tools/sized_box_ex.dart';
 
 class TrashedNotes extends StatefulWidget {
   const TrashedNotes({Key? key}) : super(key: key);
@@ -154,23 +156,21 @@ class _TrashedNotesState extends State<TrashedNotes> {
         title: const Text('Trashed Note'),
       ),
       body: deletedData.isEmpty
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'No notes have been deleted',
                     style: TextStyle(
-                      fontSize: 18.0,
+                      fontSize: 18.sp,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
+                  10.toHeight,
                   Icon(
                     Icons.delete,
-                    size: 60,
+                    size: 60.r,
                   )
                 ],
               ),

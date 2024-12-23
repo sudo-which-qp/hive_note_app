@@ -27,6 +27,9 @@ class ThemeCubit extends Cubit<ThemeState> {
   }
 
   // save the new value to the key
+  /*
+  This function is no longer needed but is kept for future reference
+   */
   Future<void> _saveToPref(bool value) async {
     await _initPrefs();
     await _pref!.setBool(key, value);
