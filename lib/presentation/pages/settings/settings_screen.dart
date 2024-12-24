@@ -1,13 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:note_app/config/router/navigates_to.dart';
 import 'package:note_app/config/router/routes_name.dart';
 import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/presentation/pages/trash/trashed_notes.dart';
+import 'package:note_app/state/cubits/auth_cubit/auth_cubit.dart';
 import 'package:note_app/state/cubits/play_button_cubit/play_button_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
 import 'package:note_app/utils/const_values.dart';
+import 'package:note_app/utils/tools/message_dialog.dart';
 import 'package:note_app/utils/tools/sized_box_ex.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
@@ -85,9 +88,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     height: 10,
                   ),
                   ListTile(
-                    leading: Icon(context.watch<ThemeCubit>().state.isDarkTheme == false
-                        ? Icons.brightness_3
-                        : Icons.brightness_6),
+                    leading: Icon(
+                        context.watch<ThemeCubit>().state.isDarkTheme == false
+                            ? Icons.brightness_3
+                            : Icons.brightness_6),
                     title: const Text(
                       'Enable Dark Theme',
                       style: TextStyle(),
@@ -95,7 +99,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     trailing: Switch(
                       value: context.watch<ThemeCubit>().state.isDarkTheme,
                       onChanged: (val) {
-                       context.read<ThemeCubit>().toggleTheme();
+                        context.read<ThemeCubit>().toggleTheme();
                       },
                     ),
                   ),
@@ -140,20 +144,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   userModel.get(tokenKey) == null
                       ? const SizedBox.shrink()
-                      : ListTile(
-                          leading: const Icon(Icons.logout),
-                          title: Text(
-                            isLoading == false ? 'Logout' : 'Please wait...',
-                          ),
-                          subtitle: const Text(
-                            'This will log you out of you cloud account',
-                            style: TextStyle(),
-                          ),
-                          onTap: isLoading == false
-                              ? () {
-                                  // logout();
-                                }
-                              : null,
+                      : BlocBuilder<AuthCubit, AuthState>(
+                          builder: (context, state) {
+                            return state is AuthAuthenticated ? ListTile(
+                              leading: const Icon(Icons.logout),
+                              title: Text(
+                                isLoading == false
+                                    ? 'Logout'
+                                    : 'Please wait...',
+                              ),
+                              subtitle: const Text(
+                                'This will log you out of you cloud account',
+                                style: TextStyle(),
+                              ),
+                              onTap: () {
+                                context.read<AuthCubit>().logout().then((value) {
+                                  showSuccess('Logout successful');
+                                });
+                              },
+                            ) : const SizedBox.shrink();
+                          },
                         ),
                 ],
               ),

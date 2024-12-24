@@ -11,7 +11,7 @@ class AppExceptions implements Exception {
 
   @override
   String toString() {
-    return _message;
+    return _message?.toString() ?? _prefix;
   }
 }
 

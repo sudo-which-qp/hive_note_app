@@ -10,6 +10,8 @@ import 'package:note_app/utils/tools/money_formatter.dart';
 import 'package:note_app/utils/tools/sized_box_ex.dart';
 
 class MNewTextField extends StatefulWidget {
+  final TextEditingController? controller;
+
   final double? height;
   final double? width;
   final int? maxLines;
@@ -51,6 +53,8 @@ class MNewTextField extends StatefulWidget {
 
   const MNewTextField({
     Key? key,
+    this.controller,
+
     this.height,
     this.width,
     this.maxLines,
@@ -123,6 +127,7 @@ class _MNewTextFieldState extends State<MNewTextField> {
           height: 10.h,
         ),
         TextFormField(
+          controller: widget.controller,
           initialValue: widget.initialValue,
           key: Key(widget.fieldKey.toString()),
           obscureText: widget.offText,

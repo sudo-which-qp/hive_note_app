@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       : AppColors.cardColor,
                   child: InkWell(
                     onTap: () {
-
+                      navigateTo(context, destination: RoutesName.cloud_notes);
                     },
                     child: Container(
                       height: 200.h,

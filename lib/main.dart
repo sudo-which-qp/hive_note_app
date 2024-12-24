@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:note_app/app/src/app.dart';
 import 'package:note_app/helpers/hive_manager.dart';
+import 'package:note_app/services/service_locator.dart';
+import 'package:note_app/state/cubits/auth_cubit/auth_cubit.dart';
 import 'package:note_app/state/cubits/note_style_cubit/note_style_cubit.dart';
 import 'package:note_app/state/cubits/play_button_cubit/play_button_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
@@ -21,6 +23,9 @@ void main() async {
 
   loadApiCredentials();
 
+  // Setup dependency injection
+  await setupLocator();
+
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -37,6 +42,9 @@ void main() async {
         ),
         BlocProvider<NoteStyleCubit>(
           create: (context) => NoteStyleCubit(),
+        ),
+        BlocProvider<AuthCubit>(
+          create: (context) => getIt<AuthCubit>(),
         ),
       ],
       child: const App(),
