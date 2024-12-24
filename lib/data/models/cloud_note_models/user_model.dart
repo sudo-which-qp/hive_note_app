@@ -64,17 +64,17 @@ class UserModel {
 
   factory UserModel.fromJsonUserDetails(responseData) {
     return UserModel(
-      id: responseData['data']['id'],
-      uuid: responseData['data']['uuid'],
-      firstName: responseData['data']['first_name'],
-      lastName: responseData['data']['last_name'],
-      userName: responseData['data']['username'],
-      email: responseData['data']['email'],
-      emailVerified: responseData['data']['email_verified_at'],
-      hasSubscription: responseData['data']['has_subscription'],
-      hasExceedTier: responseData['data']['has_exceed_tier'],
-      planDuration: responseData['data']['plan_duration'],
-      planSubDate: responseData['data']['plan_sub_date'],
+      id: responseData['data']['user']['id'],
+      uuid: responseData['data']['user']['uuid'],
+      firstName: responseData['data']['user']['first_name'],
+      lastName: responseData['data']['user']['last_name'],
+      userName: responseData['data']['user']['username'],
+      email: responseData['data']['user']['email'],
+      emailVerified: responseData['data']['user']['email_verified_at'],
+      hasSubscription: responseData['data']['user']['has_subscription'],
+      hasExceedTier: responseData['data']['user']['has_exceed_tier'],
+      planDuration: responseData['data']['user']['plan_duration'],
+      planSubDate: responseData['data']['user']['plan_sub_date'],
     );
   }
 }

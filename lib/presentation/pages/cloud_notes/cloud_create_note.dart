@@ -2,9 +2,14 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:note_app/config/router/navigates_to.dart';
+import 'package:note_app/config/router/routes_name.dart';
 import 'package:note_app/helpers/hive_manager.dart';
+import 'package:note_app/state/cubits/auth_cubit/auth_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
+import 'package:note_app/utils/tools/message_dialog.dart';
 import 'package:provider/provider.dart';
 
 class CloudCreateNote extends StatefulWidget {
@@ -38,7 +43,7 @@ class _CloudCreateNoteState extends State<CloudCreateNote> {
         msg: 'Note Saved',
         toastLength: Toast.LENGTH_SHORT,
       );
-      if(mounted) {
+      if (mounted) {
         // context.pop();
         // context.pushNamed(RoutesName.cloud_notes);
       }
@@ -48,7 +53,7 @@ class _CloudCreateNoteState extends State<CloudCreateNote> {
         msg: 'Note was empty, nothing was saved',
         toastLength: Toast.LENGTH_SHORT,
       );
-      if(mounted) {
+      if (mounted) {
         // context.pop();
         // context.pushNamed(RoutesName.cloud_notes);
       }
@@ -101,80 +106,95 @@ class _CloudCreateNoteState extends State<CloudCreateNote> {
     var height = MediaQuery.of(context).size.height;
     return WillPopScope(
       onWillPop: checkIfNoteIsNotEmptyWhenGoingBack,
-      child: Scaffold(
-        key: scaffoldKey,
-        appBar: AppBar(
-          // used a text form field for the app bar
-          leading: Platform.isIOS
-              ? IconButton(
-                  icon: const Icon(CupertinoIcons.back),
-                  onPressed: checkIfNoteIsNotEmptyWhenGoingBack,
-                )
-              : null,
-          title: TextFormField(
-            autofocus: true,
-            controller: _noteTitle,
-            decoration: const InputDecoration(
-              hintText: 'Create Note Title...',
-              hintStyle: TextStyle(
+      child: BlocListener<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is AuthEmailUnverified) {
+            navigateReplaceTo(context,
+                destination: RoutesName.verify_code_screen,
+                arguments: {
+                  'from': 'login',
+                });
+          } else if (state is AuthError) {
+            showError(state.message);
+          }
+        },
+        child: Scaffold(
+          key: scaffoldKey,
+          appBar: AppBar(
+            // used a text form field for the app bar
+            leading: Platform.isIOS
+                ? IconButton(
+                    icon: const Icon(CupertinoIcons.back),
+                    onPressed: checkIfNoteIsNotEmptyWhenGoingBack,
+                  )
+                : null,
+            title: TextFormField(
+              autofocus: true,
+              controller: _noteTitle,
+              decoration: const InputDecoration(
+                hintText: 'Create Note Title...',
+                hintStyle: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                border: InputBorder.none,
+              ),
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
-              border: InputBorder.none,
-            ),
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-            onFieldSubmitted: (_) {
-              FocusScope.of(context).requestFocus(goToNotes);
-            },
-            keyboardType: TextInputType.text,
-            textCapitalization: TextCapitalization.sentences,
-            textInputAction: TextInputAction.next,
-          ),
-          // ends here //
-          centerTitle: false,
-          actions: <Widget>[
-            TextButton.icon(
-              onPressed: () {
-                checkIfNoteIsNotEmptyAndSaveNote();
+              onFieldSubmitted: (_) {
+                FocusScope.of(context).requestFocus(goToNotes);
               },
-              icon: Icon(
-                Icons.done,
-                color:
-                context.watch<ThemeCubit>().state.isDarkTheme == false ? Colors.black45 : Colors.white38,
-              ),
-              label: Text(
-                'Save',
-                style: TextStyle(
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.next,
+            ),
+            // ends here //
+            centerTitle: false,
+            actions: <Widget>[
+              TextButton.icon(
+                onPressed: () {
+                  checkIfNoteIsNotEmptyAndSaveNote();
+                },
+                icon: Icon(
+                  Icons.done,
                   color: context.watch<ThemeCubit>().state.isDarkTheme == false
                       ? Colors.black45
                       : Colors.white38,
                 ),
+                label: Text(
+                  'Save',
+                  style: TextStyle(
+                    color:
+                        context.watch<ThemeCubit>().state.isDarkTheme == false
+                            ? Colors.black45
+                            : Colors.white38,
+                  ),
+                ),
               ),
-            ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            child: TextField(
-              controller: _noteText,
-              decoration: const InputDecoration(
-                hintText: 'Type Note...',
-                hintStyle: TextStyle(),
-                border: InputBorder.none,
+            ],
+          ),
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              child: TextField(
+                controller: _noteText,
+                decoration: const InputDecoration(
+                  hintText: 'Type Note...',
+                  hintStyle: TextStyle(),
+                  border: InputBorder.none,
+                ),
+                textCapitalization: TextCapitalization.sentences,
+                focusNode: goToNotes,
+                style: myTextStyle,
+                textAlign: myTextAlign!,
+                maxLines: height.toInt(),
               ),
-              textCapitalization: TextCapitalization.sentences,
-              focusNode: goToNotes,
-              style: myTextStyle,
-              textAlign: myTextAlign!,
-              maxLines: height.toInt(),
-            ),
 
-            //TODO! trying to add styling functionality, having issues
-            //TODO! persisting the style for a saved note
+              //TODO! trying to add styling functionality, having issues
+              //TODO! persisting the style for a saved note
+            ),
           ),
         ),
       ),

@@ -28,3 +28,11 @@ class AuthError extends AuthState {
   @override
   List<Object?> get props => [message];
 }
+
+class AuthEmailUnverified extends AuthState {
+  final UserModel user;
+  const AuthEmailUnverified(this.user);
+
+  @override
+  List<Object?> get props => [user];
+}

@@ -118,6 +118,20 @@ class NetworkServicesApi implements BaseApiService {
         return jsonResponse;
       case 401:
         dynamic jsonResponse = json.decode(response.body);
+        logger.i('401 Response: $jsonResponse');
+        // If it's unverified email case
+        if (jsonResponse['message'].contains('not yet verified') &&
+            jsonResponse['data']?['token'] != null) {
+          logger.i('Unverified email case detected');
+          return jsonResponse; // Just return the response for processing
+        }
+        throw UnauthorisedException(jsonResponse['message']);
+      case 403:
+        dynamic jsonResponse = json.decode(response.body);
+        // When user tries to access something without email verification
+        if (jsonResponse['message'].contains('not yet verified')) {
+          throw UnauthorisedException(jsonResponse['message']);
+        }
         throw UnauthorisedException(jsonResponse['message']);
       case 404:
         dynamic jsonResponse = json.decode(response.body);

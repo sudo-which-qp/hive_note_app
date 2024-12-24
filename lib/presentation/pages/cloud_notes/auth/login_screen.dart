@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:note_app/config/router/navigates_to.dart';
 import 'package:note_app/config/router/routes_name.dart';
 import 'package:note_app/presentation/widget/mNew_text_widget.dart';
 import 'package:note_app/presentation/widget/mbutton.dart';
@@ -44,8 +45,11 @@ class _LoginScreenState extends State<LoginScreen> {
           // Get saved route and navigate
           final attemptedRoute =
               context.read<AuthCubit>().getAndClearAttemptedRoute();
-          Navigator.of(context)
-              .pushReplacementNamed(attemptedRoute ?? RoutesName.cloud_notes);
+          navigateEndTo(context, destination: attemptedRoute ?? RoutesName.cloud_notes);
+        } else if(state is AuthEmailUnverified) {
+          navigateReplaceTo(context, destination: RoutesName.verify_code_screen, arguments: {
+            'from': 'login',
+          });
         } else if (state is AuthError) {
           showError(state.message);
         }
@@ -115,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       WidgetSpan(
                         child: GestureDetector(
                           onTap: () {
-                            // context.pushNamed(RoutesName.register_screen);
+                            navigateTo(context, destination: RoutesName.register_screen);
                           },
                           child: Text(
                             'Create One',

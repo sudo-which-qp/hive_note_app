@@ -9,16 +9,25 @@ import 'package:note_app/state/cubits/auth_cubit/auth_cubit.dart';
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final authCubit = getIt<AuthCubit>();
+    final state = authCubit.state;
+    final args = settings.arguments as Map<String, dynamic>?;
+
 
     if (RoutesGuard.requiresAuth(settings.name)) {
       if (authCubit.state is! AuthAuthenticated) {
-        // Save the attempted route for redirect after login
         authCubit.saveAttemptedRoute(settings.name!);
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       }
     }
 
-    final args = settings.arguments as Map<String, dynamic>?;
+    if (RoutesGuard.requiresEmailVerification(settings.name)) {
+      if (state is AuthEmailUnverified) {
+        authCubit.saveAttemptedRoute(settings.name!);
+        return MaterialPageRoute(
+          builder: (_) => VerifyCode(from: args!['from']),
+        );
+      }
+    }
 
     switch (settings.name) {
       // Middleware Wrapper
