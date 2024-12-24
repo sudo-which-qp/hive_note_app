@@ -44,7 +44,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          // Get saved route and navigate
           final attemptedRoute =
               context.read<AuthCubit>().getAndClearAttemptedRoute();
           Navigator.pop(context);

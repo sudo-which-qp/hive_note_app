@@ -57,7 +57,6 @@ class AuthCubit extends Cubit<AuthState> {
         logger.i('Handling unverified user in cubit');
         final user = _authRepository.getCurrentUser();
         if (user != null) {
-          // Emit both the error message and the unverified state
           emit(AuthError(e.toString()));
           emit(AuthEmailUnverified(user,));
         }
@@ -102,10 +101,8 @@ class AuthCubit extends Cubit<AuthState> {
       final user = _authRepository.getCurrentUser();
       if (user != null) {
         showSuccess('You have been verified successfully.');
-        // Make sure to get attempted route before emitting new state
         final attemptedRoute = _attemptedRoute;
         emit(AuthAuthenticated(user));
-        // Set attempted route if needed
         if (attemptedRoute != null) {
           saveAttemptedRoute(attemptedRoute);
         }

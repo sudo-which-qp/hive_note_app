@@ -25,7 +25,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoading = false;
   bool isAuthLoading = false;
 
-  // Add TextEditingControllers instead of String variables
   final TextEditingController _identifierController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 

@@ -73,9 +73,7 @@ class _VerifyCodeState extends State<VerifyCode> {
         return BlocListener<AuthCubit, AuthState>(
           listener: (context, state) {
             if (state is AuthAuthenticated) {
-              // Get attempted route if any
               final attemptedRoute = context.read<AuthCubit>().getAndClearAttemptedRoute();
-              // Navigate to cloud notes after verification
               navigateReplaceTo(
                 context,
                 destination: attemptedRoute ?? RoutesName.cloud_notes,
