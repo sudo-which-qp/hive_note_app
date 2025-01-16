@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:note_app/config/router/navigates_to.dart';
+import 'package:note_app/config/router/routes_name.dart';
 import 'package:note_app/data/models/cloud_note_models/cloud_note_model.dart';
 import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/presentation/pages/cloud_notes/cloud_read_note_screen.dart';
+import 'package:note_app/state/cubits/cloud_note_cubit/cloud_note_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
 import 'package:note_app/utils/const_values.dart';
+import 'package:note_app/utils/tools/message_dialog.dart';
 import 'package:provider/provider.dart';
 
 class CloudEditNote extends StatefulWidget {
@@ -33,7 +37,6 @@ class _CloudEditNoteState extends State<CloudEditNote> {
   var _initValue = {'notes': '', 'conText': ''};
 
   var _isInit = true;
-
 
   @override
   void didChangeDependencies() {
@@ -63,105 +66,118 @@ class _CloudEditNoteState extends State<CloudEditNote> {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
-    final storeData = HiveManager().cloudNoteModelBox;
-    return Scaffold(
-      key: scaffoldKey,
-      appBar: AppBar(
-        title: TextFormField(
-          initialValue: _initValue['title'],
-          autofocus: true,
-          onChanged: (val) {
-            _initValue['title'] = val;
-          },
-          decoration: const InputDecoration(
-            hintText: 'Create Note Title...',
-            hintStyle: TextStyle(
+    return BlocListener<CloudNoteCubit, CloudNoteState>(
+      listener: (context, state) {
+        if(state is CloudNoteUpdated) {
+          // navigateReplaceTo(context, destination: RoutesName.cloud_read_notes_screen , arguments: {
+          //   'note': noteM,
+          //   'noteKey': key
+          // });
+        } else if (state is CloudError) {
+          showError(state.message);
+        }
+      },
+      child: Scaffold(
+        key: scaffoldKey,
+        appBar: AppBar(
+          title: TextFormField(
+            initialValue: _initValue['title'],
+            autofocus: true,
+            onChanged: (val) {
+              _initValue['title'] = val;
+            },
+            decoration: const InputDecoration(
+              hintText: 'Create Note Title...',
+              hintStyle: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              border: InputBorder.none,
+            ),
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
-            border: InputBorder.none,
-          ),
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-          onFieldSubmitted: (_) {
-            FocusScope.of(context).requestFocus(goToNotes);
-          },
-          keyboardType: TextInputType.text,
-          textCapitalization: TextCapitalization.sentences,
-          textInputAction: TextInputAction.next,
-        ),
-        centerTitle: false,
-        actions: <Widget>[
-          TextButton.icon(
-            onPressed: () {
-              if (_initValue['title']!.isEmpty ||
-                  _initValue['notes']!.isEmpty) {
-                Fluttertoast.showToast(
-                  msg: 'Title or note body cannot be empty',
-                  toastLength: Toast.LENGTH_SHORT,
-                );
-                return;
-              } else {
-                var key = widget.noteKey;
-                String? title = _initValue['title'];
-                String? note = _initValue['notes'];
-
-                CloudNoteModel noteM = CloudNoteModel(
-                  title: title!,
-                  notes: note!,
-                );
-
-                // editNote(title, note, widget.notes!.uuid);
-
-                storeData.put(key, noteM);
-                Fluttertoast.showToast(
-                  msg: 'Note Saved',
-                  toastLength: Toast.LENGTH_SHORT,
-                );
-                Navigator.pop(context);
-                // navigateTo(context,
-                //     destination: CloudReadNote(note: noteM, noteKey: key));
-              }
+            onFieldSubmitted: (_) {
+              FocusScope.of(context).requestFocus(goToNotes);
             },
-            icon: Icon(
-              Icons.done,
-              color: context.watch<ThemeCubit>().state.isDarkTheme == false
-                  ? Colors.black45
-                  : Colors.white38,
-            ),
-            label: Text(
-              'Update',
-              style: TextStyle(
+            keyboardType: TextInputType.text,
+            textCapitalization: TextCapitalization.sentences,
+            textInputAction: TextInputAction.next,
+          ),
+          centerTitle: false,
+          actions: <Widget>[
+            TextButton.icon(
+              onPressed: () {
+                if (_initValue['title']!.isEmpty ||
+                    _initValue['notes']!.isEmpty) {
+                  Fluttertoast.showToast(
+                    msg: 'Title or note body cannot be empty',
+                    toastLength: Toast.LENGTH_SHORT,
+                  );
+                  return;
+                } else {
+                  var key = widget.noteKey;
+                  String? title = _initValue['title'];
+                  String? note = _initValue['notes'];
+
+                  CloudNoteModel noteM = CloudNoteModel(
+                    uuid: widget.notes!.uuid!,
+                    title: title!,
+                    notes: note!,
+                  );
+
+                  context.read<CloudNoteCubit>().editNote(noteM, key!);
+
+                  Fluttertoast.showToast(
+                    msg: 'Note Saved',
+                    toastLength: Toast.LENGTH_SHORT,
+                  );
+
+                  navigateReplaceTo(context, destination: RoutesName.cloud_read_notes_screen , arguments: {
+                    'note': noteM,
+                    'noteKey': key
+                  });
+                }
+              },
+              icon: Icon(
+                Icons.done,
                 color: context.watch<ThemeCubit>().state.isDarkTheme == false
                     ? Colors.black45
                     : Colors.white38,
               ),
+              label: Text(
+                'Update',
+                style: TextStyle(
+                  color: context.watch<ThemeCubit>().state.isDarkTheme == false
+                      ? Colors.black45
+                      : Colors.white38,
+                ),
+              ),
             ),
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-        child: TextFormField(
-          initialValue: _initValue['notes'],
-          autofocus: true,
-          onChanged: (value) {
-            _initValue['notes'] = value;
-          },
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-          ),
-          focusNode: goToNotes,
-          style: myTextStyle,
-          textCapitalization: TextCapitalization.sentences,
-          textAlign: myTextAlign!,
-          maxLines: height.toInt(),
+          ],
         ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: TextFormField(
+            initialValue: _initValue['notes'],
+            autofocus: true,
+            onChanged: (value) {
+              _initValue['notes'] = value;
+            },
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+            ),
+            focusNode: goToNotes,
+            style: myTextStyle,
+            textCapitalization: TextCapitalization.sentences,
+            textAlign: myTextAlign!,
+            maxLines: height.toInt(),
+          ),
 
-        //TODO! trying to add styling functionality, having issues
-        //TODO! persisting the style for a saved note
+          //TODO! trying to add styling functionality, having issues
+          //TODO! persisting the style for a saved note
+        ),
       ),
     );
   }

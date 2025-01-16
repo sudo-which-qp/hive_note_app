@@ -3,7 +3,10 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:note_app/config/router/navigates_to.dart';
+import 'package:note_app/config/router/routes_name.dart';
 import 'package:note_app/data/models/cloud_note_models/cloud_note_model.dart';
+import 'package:note_app/state/cubits/cloud_note_cubit/cloud_note_cubit.dart';
 import 'package:note_app/state/cubits/play_button_cubit/play_button_cubit.dart';
 import 'package:note_app/utils/const_values.dart';
 import 'package:provider/provider.dart';
@@ -179,70 +182,74 @@ class _CloudReadNoteState extends State<CloudReadNote> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Read Note',
+    return WillPopScope(
+      onWillPop: () async {
+        await context.read<CloudNoteCubit>().fetchNotes();
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Read Note',
+          ),
+          shadowColor: Colors.transparent,
+          backgroundColor: Colors.transparent,
+          centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.mode_edit),
+              onPressed: () {
+                navigateReplaceTo(context, destination: RoutesName.cloud_edit_notes_screen , arguments: {
+                  'notes': widget.note,
+                  'noteKey': widget.noteKey
+                });
+              },
+            )
+          ],
         ),
-        shadowColor: Colors.transparent,
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.mode_edit),
-            onPressed: () {
-              Navigator.pop(context);
-              // navigateTo(context,
-              //     destination: CloudEditNote(
-              //       notes: widget.note,
-              //       noteKey: widget.noteKey,
-              //     ));
-            },
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                child: Center(
-                  child: Text(
-                    '${widget.note!.title}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  child: Center(
+                    child: Text(
+                      '${widget.note!.title}',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      softWrap: true,
+                      textAlign: TextAlign.center,
                     ),
-                    softWrap: true,
-                    textAlign: TextAlign.center,
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              showText(),
-            ],
+                const SizedBox(
+                  height: 15,
+                ),
+                showText(),
+              ],
+            ),
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: context.watch<PlayButtonCubit>().state.canPlay
+            ? FloatingActionButton(
+                backgroundColor: Colors.white60,
+                onPressed: () {
+                  ttsState == TtsCloudState.stopped ? _speak() : _stop();
+                },
+                child: Icon(
+                  ttsState == TtsCloudState.stopped
+                      ? Icons.play_circle_outline
+                      : Icons.stop_circle_outlined,
+                  color: Colors.black45,
+                ),
+              )
+            : null,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: context.watch<PlayButtonCubit>().state.canPlay
-          ? FloatingActionButton(
-              backgroundColor: Colors.white60,
-              onPressed: () {
-                ttsState == TtsCloudState.stopped ? _speak() : _stop();
-              },
-              child: Icon(
-                ttsState == TtsCloudState.stopped
-                    ? Icons.play_circle_outline
-                    : Icons.stop_circle_outlined,
-                color: Colors.black45,
-              ),
-            )
-          : null,
     );
   }
 }

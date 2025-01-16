@@ -129,9 +129,14 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
                   ),
                   itemBuilder: (_, index) {
                     final note = state.notes[index];
+                    final hiveKey = state.hiveKeys[index];
                     return GestureDetector(
                       onTap: () {
                         // Your navigation logic
+                        navigateTo(context, destination: RoutesName.cloud_read_notes_screen, arguments: {
+                          'note': note,
+                          'noteKey': hiveKey,
+                        });
                       },
                       onLongPress: () {
                         // Your delete dialog logic

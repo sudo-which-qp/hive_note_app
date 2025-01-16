@@ -19,7 +19,7 @@ class RoutesName {
   // Cloud Notes Route
   static const String cloud_create_notes_screen = 'cloud_create_notes_screen';
   static const String cloud_edit_notes_screen = 'cloud_edit_notes_screen';
-  static const String cloud_read_notes_screen = 'cloud_create_notes_screen';
+  static const String cloud_read_notes_screen = 'cloud_read_notes_screen';
 
   // ends here
 

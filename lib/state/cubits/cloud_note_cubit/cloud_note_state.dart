@@ -13,11 +13,12 @@ class CloudNoteLoading extends CloudNoteState {}
 
 class CloudNoteLoaded extends CloudNoteState {
   final List<CloudNoteModel> notes;
+  final List<int> hiveKeys;
 
-  const CloudNoteLoaded(this.notes);
+  const CloudNoteLoaded(this.notes, this.hiveKeys);
 
   @override
-  List<Object?> get props => [notes];
+  List<Object?> get props => [notes, hiveKeys];
 }
 
 class CloudNoteSingleLoaded extends CloudNoteState {

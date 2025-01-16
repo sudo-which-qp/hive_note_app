@@ -70,7 +70,7 @@ class CloudNoteRepository {
     }
   }
 
-  Future<CloudNoteModel> updateNote(CloudNoteModel note) async {
+  Future<CloudNoteModel> updateNote(CloudNoteModel note, int noteKey) async {
     try {
       final token = _getToken();
 
@@ -87,6 +87,7 @@ class CloudNoteRepository {
       logger.i('Update Note Response: $response');
 
       if (response['success'] == true) {
+        // _hiveManager.cloudNoteModelBox.put(noteKey, note);
         return CloudNoteModel.fromJson(response['data']);
       }
 
@@ -149,6 +150,11 @@ class CloudNoteRepository {
       logger.e('Error in createNote: $e');
       throw e.toString();
     }
+  }
+
+
+  List<int> getHiveKeys() {
+    return _hiveManager.cloudNoteModelBox.keys.cast<int>().toList();
   }
 
 }

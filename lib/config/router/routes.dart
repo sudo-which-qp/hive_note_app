@@ -4,7 +4,6 @@ import 'package:note_app/config/router/routes_name.dart';
 import 'package:note_app/presentation/views.dart';
 import 'package:note_app/services/service_locator.dart';
 import 'package:note_app/state/cubits/auth_cubit/auth_cubit.dart';
-import 'package:note_app/utils/const_values.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -12,12 +11,11 @@ class Routes {
     final state = authCubit.state;
     final args = settings.arguments as Map<String, dynamic>?;
 
-
     if (RoutesGuard.requiresAuth(settings.name)) {
       if (state is AuthEmailUnverified) {
         return MaterialPageRoute(
           builder: (_) => const VerifyCode(from: 'protected_route'),
-          maintainState: true,  // Preserve route state
+          maintainState: true, // Preserve route state
         );
       }
 
@@ -29,7 +27,6 @@ class Routes {
         );
       }
     }
-
 
     switch (settings.name) {
       //
@@ -63,14 +60,28 @@ class Routes {
       case RoutesName.edit_notes_screen:
         return MaterialPageRoute(
             builder: (_) => EditNoteScreen(
-              notes: args!['notes'],
-              noteKey: args['noteKey'],
-            ));
+                  notes: args!['notes'],
+                  noteKey: args['noteKey'],
+                ));
       // ends here
 
       // Cloud Notes
       case RoutesName.cloud_create_notes_screen:
         return MaterialPageRoute(builder: (_) => const CloudCreateNote());
+
+      case RoutesName.cloud_read_notes_screen:
+        return MaterialPageRoute(
+            builder: (_) => CloudReadNote(
+              note: args!['note'],
+              noteKey: args['noteKey'],
+            ));
+
+      case RoutesName.cloud_edit_notes_screen:
+        return MaterialPageRoute(
+            builder: (_) => CloudEditNote(
+              notes: args!['notes'],
+              noteKey: args['noteKey'],
+            ));
       // ends here
 
       //Auth

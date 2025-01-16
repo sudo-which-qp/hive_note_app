@@ -20,7 +20,8 @@ class CloudNoteCubit extends Cubit<CloudNoteState> {
       emit(CloudNoteLoading());
 
       final notes = await _repository.fetchNotes();
-      emit(CloudNoteLoaded(notes));
+      final hiveKeys = _repository.getHiveKeys();
+      emit(CloudNoteLoaded(notes, hiveKeys),);
     } catch (e) {
       logger.e('Error in fetchNotes: $e');
       emit(CloudError(e.toString()));
@@ -45,6 +46,20 @@ class CloudNoteCubit extends Cubit<CloudNoteState> {
 
       final note = await _repository.createNote(title!, content!);
       emit(CloudNoteCreated(note));
+
+    } catch (e) {
+      logger.e('Error in fetchNotes: $e');
+      emit(CloudError(e.toString()));
+    }
+  }
+
+  Future<void> editNote(CloudNoteModel cloudNote, int noteKey) async {
+    try {
+      emit(CloudNoteLoading());
+
+      final updatedNote = await _repository.updateNote(cloudNote, noteKey);
+
+      emit(CloudNoteUpdated(updatedNote));
 
     } catch (e) {
       logger.e('Error in fetchNotes: $e');
