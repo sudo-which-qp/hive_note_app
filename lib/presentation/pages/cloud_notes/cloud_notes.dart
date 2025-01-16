@@ -12,6 +12,7 @@ import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/state/cubits/cloud_note_cubit/cloud_note_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
 import 'package:note_app/utils/colors/m_colors.dart';
+import 'package:note_app/utils/tools/message_dialog.dart';
 import 'package:provider/provider.dart';
 
 class CloudNotesScreen extends StatefulWidget {
@@ -27,30 +28,38 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
     showDialog(
       context: context,
       builder: (_) {
-        return AlertDialog(
-          title: const Text('Warning'),
-          content: const Text('Are you sure you want to delete this note?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                'No',
+        return BlocListener<CloudNoteCubit, CloudNoteState>(
+          listener: (context, state) {
+            if (state is CloudNoteDeleted) {
+              context.read<CloudNoteCubit>().fetchNotes();
+              Navigator.pop(context);
+            } else if (state is CloudError) {
+              showError(state.message);
+            }
+          },
+          child: AlertDialog(
+            title: const Text('Warning'),
+            content: const Text('Are you sure you want to delete this note?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'No',
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: () {
-                storeData.delete(key);
-                Navigator.of(context).pop();
-                setState(() {});
-                // trashNote(note.uuid);
-              },
-              child: const Text(
-                'Yes',
+              TextButton(
+                onPressed: () {
+                  storeData.delete(key);
+                  context.read<CloudNoteCubit>().deleteNote(note);
+                },
+                child: const Text(
+                  'Yes',
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );
@@ -79,15 +88,17 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Platform.isAndroid
           ? FloatingActionButton(
-        onPressed: () {
-          navigateReplaceTo(context, destination: RoutesName.cloud_create_notes_screen);
-        },
-        backgroundColor: context.watch<ThemeCubit>().state.isDarkTheme == true
-            ? AppColors.cardColor
-            : AppColors.primaryColor,
-        tooltip: 'Add Note',
-        child: Icon(Icons.add, color: AppColors.defaultBlack),
-      )
+              onPressed: () {
+                navigateReplaceTo(context,
+                    destination: RoutesName.cloud_create_notes_screen);
+              },
+              backgroundColor:
+                  context.watch<ThemeCubit>().state.isDarkTheme == true
+                      ? AppColors.cardColor
+                      : AppColors.primaryColor,
+              tooltip: 'Add Note',
+              child: Icon(Icons.add, color: AppColors.defaultBlack),
+            )
           : null,
       body: BlocBuilder<CloudNoteCubit, CloudNoteState>(
         builder: (context, state) {
@@ -124,7 +135,8 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
                   crossAxisSpacing: 8.0,
                   addRepaintBoundaries: true,
                   itemCount: state.notes.length,
-                  gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate:
+                      const SliverSimpleGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                   ),
                   itemBuilder: (_, index) {
@@ -133,13 +145,16 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
                     return GestureDetector(
                       onTap: () {
                         // Your navigation logic
-                        navigateTo(context, destination: RoutesName.cloud_read_notes_screen, arguments: {
-                          'note': note,
-                          'noteKey': hiveKey,
-                        });
+                        navigateTo(context,
+                            destination: RoutesName.cloud_read_notes_screen,
+                            arguments: {
+                              'note': note,
+                              'noteKey': hiveKey,
+                            });
                       },
                       onLongPress: () {
                         // Your delete dialog logic
+                        deleteDialog(hiveKey, note);
                       },
                       child: Container(
                         decoration: const BoxDecoration(
@@ -156,7 +171,11 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
                                 padding: const EdgeInsets.all(8),
                                 width: MediaQuery.of(context).size.width,
                                 decoration: BoxDecoration(
-                                  color: context.watch<ThemeCubit>().state.isDarkTheme == false
+                                  color: context
+                                              .watch<ThemeCubit>()
+                                              .state
+                                              .isDarkTheme ==
+                                          false
                                       ? AppColors.primaryColor
                                       : AppColors.cardGray,
                                 ),
@@ -164,7 +183,8 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
                                   note.title == null || note.title == ''
                                       ? 'No Title'
                                       : '${note.title}',
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold),
                                   softWrap: true,
                                   textAlign: TextAlign.center,
                                 ),

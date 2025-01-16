@@ -98,7 +98,7 @@ class CloudNoteRepository {
     }
   }
 
-  Future<CloudNoteModel> moveToTrash(CloudNoteModel note) async {
+  Future<dynamic> moveToTrash(CloudNoteModel note) async {
     try {
       final token = _getToken();
 
@@ -106,8 +106,6 @@ class CloudNoteRepository {
         requestEnd: 'user/trash_note',
         params: {
           'note_uuid': note.uuid,
-          'note_title': note.title,
-          'note_content': note.notes,
         },
         bearer: token,
       );
@@ -115,7 +113,7 @@ class CloudNoteRepository {
       logger.i('Update Note Response: $response');
 
       if (response['success'] == true) {
-        return CloudNoteModel.fromJson(response['data']);
+        return;
       }
 
       throw response['message'] ?? 'Failed to update note';
@@ -141,7 +139,7 @@ class CloudNoteRepository {
       logger.i('Create Note Response: $response');
 
       if (response['success'] == true) {
-        _hiveManager.noteModelBox.deleteAt(noteKey);
+        _hiveManager.noteModelBox.delete(noteKey);
         return CloudNoteModel.fromJson(response['data']);
       }
 

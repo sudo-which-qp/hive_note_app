@@ -66,4 +66,19 @@ class CloudNoteCubit extends Cubit<CloudNoteState> {
       emit(CloudError(e.toString()));
     }
   }
+
+  Future<void> deleteNote(CloudNoteModel cloudNote) async {
+    try {
+      emit(CloudNoteLoading());
+
+      await _repository.moveToTrash(cloudNote);
+
+      emit(CloudNoteDeleted());
+
+    } catch (e) {
+      logger.e('Error in fetchNotes: $e');
+      emit(CloudError(e.toString()));
+    }
+  }
+
 }

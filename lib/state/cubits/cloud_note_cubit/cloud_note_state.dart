@@ -48,14 +48,7 @@ class CloudNoteUpdated extends CloudNoteState {
   List<Object?> get props => [note];
 }
 
-class CloudNoteDeleted extends CloudNoteState {
-  final int noteId;
-
-  const CloudNoteDeleted(this.noteId);
-
-  @override
-  List<Object?> get props => [noteId];
-}
+class CloudNoteDeleted extends CloudNoteState {}
 
 class CloudError extends CloudNoteState {
   final String message;
