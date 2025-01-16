@@ -6,8 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:note_app/config/router/navigates_to.dart';
 import 'package:note_app/config/router/routes_name.dart';
-import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/state/cubits/auth_cubit/auth_cubit.dart';
+import 'package:note_app/state/cubits/cloud_note_cubit/cloud_note_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
 import 'package:note_app/utils/tools/message_dialog.dart';
 import 'package:provider/provider.dart';
@@ -32,20 +32,18 @@ class _CloudCreateNoteState extends State<CloudCreateNote> {
   final goToNotes = FocusNode();
 
   Future<bool> checkIfNoteIsNotEmptyWhenGoingBack() async {
-    final storeData = HiveManager().cloudNoteModelBox;
     if (_noteText.text.isNotEmpty || _noteTitle.text.isNotEmpty) {
       final String noteTitle = _noteTitle.text;
       final String note = _noteText.text;
 
-      // createNote(noteTitle, note);
+      context.read<CloudNoteCubit>().createNote(noteTitle, note);
 
       await Fluttertoast.showToast(
         msg: 'Note Saved',
         toastLength: Toast.LENGTH_SHORT,
       );
       if (mounted) {
-        // context.pop();
-        // context.pushNamed(RoutesName.cloud_notes);
+        navigateReplaceTo(context, destination: RoutesName.cloud_notes);
       }
       _isNotEmpty = true;
     } else {
@@ -54,8 +52,7 @@ class _CloudCreateNoteState extends State<CloudCreateNote> {
         toastLength: Toast.LENGTH_SHORT,
       );
       if (mounted) {
-        // context.pop();
-        // context.pushNamed(RoutesName.cloud_notes);
+        navigateReplaceTo(context, destination: RoutesName.cloud_notes);
       }
       _isNotEmpty = false;
     }
@@ -63,7 +60,6 @@ class _CloudCreateNoteState extends State<CloudCreateNote> {
   }
 
   void checkIfNoteIsNotEmptyAndSaveNote() {
-    final storeData = HiveManager().cloudNoteModelBox;
     if (_noteTitle.text.isEmpty || _noteText.text.isEmpty) {
       Fluttertoast.showToast(
         msg: 'Title or note body cannot be empty',
@@ -75,13 +71,13 @@ class _CloudCreateNoteState extends State<CloudCreateNote> {
       final String note = _noteText.text;
 
       // createNote(noteTitle, note);
+      context.read<CloudNoteCubit>().createNote(noteTitle, note);
 
       Fluttertoast.showToast(
         msg: 'Note Saved',
         toastLength: Toast.LENGTH_SHORT,
       );
-      // context.pop();
-      // context.pushNamed(RoutesName.cloud_notes);
+      navigateReplaceTo(context, destination: RoutesName.cloud_notes);
     }
   }
 

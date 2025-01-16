@@ -142,29 +142,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   const SizedBox(
                     height: 10,
                   ),
-                  userModel.get(tokenKey) == null
-                      ? const SizedBox.shrink()
-                      : BlocBuilder<AuthCubit, AuthState>(
-                          builder: (context, state) {
-                            return state is AuthAuthenticated ? ListTile(
-                              leading: const Icon(Icons.logout),
-                              title: Text(
-                                isLoading == false
-                                    ? 'Logout'
-                                    : 'Please wait...',
-                              ),
-                              subtitle: const Text(
-                                'This will log you out of you cloud account',
-                                style: TextStyle(),
-                              ),
-                              onTap: () {
-                                context.read<AuthCubit>().logout().then((value) {
-                                  showSuccess('Logout successful');
-                                });
-                              },
-                            ) : const SizedBox.shrink();
+                  BlocBuilder<AuthCubit, AuthState>(
+                    builder: (context, state) {
+                      if (state is AuthAuthenticated) {
+                        return ListTile(
+                          leading: const Icon(Icons.logout),
+                          title: const Text(
+                            'Logout' ,
+                          ),
+                          subtitle: const Text(
+                            'This will log you out of you cloud account',
+                            style: TextStyle(),
+                          ),
+                          onTap: () {
+                            context.read<AuthCubit>().logout().then((value) {
+                              showSuccess('Logout successful');
+                            });
                           },
-                        ),
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    },
+                  ),
                 ],
               ),
             ),

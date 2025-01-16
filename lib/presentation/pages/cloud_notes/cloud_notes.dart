@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:note_app/config/router/navigates_to.dart';
 import 'package:note_app/config/router/routes_name.dart';
 import 'package:note_app/data/models/cloud_note_models/cloud_note_model.dart';
 import 'package:note_app/helpers/hive_manager.dart';
@@ -64,7 +65,6 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cloudNoteModel = HiveManager().cloudNoteModelBox;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notes'),
@@ -79,7 +79,9 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Platform.isAndroid
           ? FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          navigateReplaceTo(context, destination: RoutesName.cloud_create_notes_screen);
+        },
         backgroundColor: context.watch<ThemeCubit>().state.isDarkTheme == true
             ? AppColors.cardColor
             : AppColors.primaryColor,

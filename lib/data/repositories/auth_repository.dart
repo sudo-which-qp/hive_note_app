@@ -179,6 +179,7 @@ class AuthRepository {
 
   Future<void> logout() async {
     await _hiveManager.userModelBox.delete(tokenKey);
+    await _hiveManager.cloudNoteModelBox.clear();
   }
 
   UserModel? getCurrentUser() {

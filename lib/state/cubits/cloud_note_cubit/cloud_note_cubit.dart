@@ -38,4 +38,17 @@ class CloudNoteCubit extends Cubit<CloudNoteState> {
       emit(CloudError(e.toString()));
     }
   }
+
+  Future<void> createNote(String? title, String? content) async {
+    try {
+      emit(CloudNoteLoading());
+
+      final note = await _repository.createNote(title!, content!);
+      emit(CloudNoteCreated(note));
+
+    } catch (e) {
+      logger.e('Error in fetchNotes: $e');
+      emit(CloudError(e.toString()));
+    }
+  }
 }
