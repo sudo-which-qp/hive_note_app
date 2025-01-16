@@ -95,21 +95,42 @@ class AuthRepository {
     if (response['success'] != true) {
       throw response['message'];
     }
+
+    if (response['success'] == true) {
+      final currentUser = _hiveManager.userModelBox.get(userKey);
+      if (currentUser != null) {
+        // Create new user model with verified status
+        final updatedUser = UserModel(
+          id: currentUser.id,
+          uuid: currentUser.uuid,
+          firstName: currentUser.firstName,
+          lastName: currentUser.lastName,
+          userName: currentUser.userName,
+          email: currentUser.email,
+          emailVerified: DateTime.now().toString(), // Update verification status
+          hasSubscription: currentUser.hasSubscription,
+          hasExceedTier: currentUser.hasExceedTier,
+          planDuration: currentUser.planDuration,
+          planSubDate: currentUser.planSubDate,
+        );
+        await _hiveManager.userModelBox.put(userKey, updatedUser);
+      }
+    }
   }
 
-  Future<void> resendVerificationCode() async {
+  Future<void> resendVerificationCode({String? email}) async {
     final user = _hiveManager.userModelBox.get(userKey);
     logger.i('Stored User: $user');
     logger.i('User Email: ${user?.email}');
 
-    if (user?.email == null) {
+    if (user?.email == null && email == null) {
       logger.e('User email is null');
       throw 'User email not found';
     }
     final response = await _api.postApi(
       requestEnd: 'user/auth/send_code',
       params: {
-        'email': user!.email,
+        'email': email ?? user!.email,
       },
     );
 
@@ -119,6 +140,42 @@ class AuthRepository {
       throw response['message'];
     }
   }
+
+  Future<void> forgotPassword(String email) async {
+    final response = await _api.postApi(
+      requestEnd: 'user/auth/forgot_password',
+      params: {
+        'email': email,
+      },
+    );
+
+    logger.i(response);
+
+    if (response['success'] != true) {
+      throw response['message'];
+    }
+    // return true;
+  }
+
+  Future<void> resetPassword(String otpCode, String newPassword) async {
+    final response = await _api.postApi(
+      requestEnd: 'user/auth/reset_password',
+      params: {
+        'otp_code': otpCode,
+        'new_password': newPassword,
+      },
+    );
+
+    logger.i(response);
+
+    if (response['success'] != true) {
+      throw response['message'];
+    }
+
+    // return true;
+  }
+
+  // ======================================== //
 
   Future<void> logout() async {
     await _hiveManager.userModelBox.delete(tokenKey);
@@ -130,6 +187,43 @@ class AuthRepository {
 
   UserModel? getCurrentUserToken() {
     return _hiveManager.userModelBox.get(tokenKey);
+  }
+
+  Future<UserModel?> fetchUserDetails() async {
+    try {
+      final token = _hiveManager.userModelBox.get(tokenKey)?.accessToken;
+
+      final response = await _api.getApi(
+        requestEnd: 'user/fetch_user',
+        bearer: token,
+      );
+
+      if (response['success'] == false) {
+
+        if (response['message'].contains('not verified') &&
+            response['data'] != null &&
+            response['data']['user'] != null) {
+
+          final user = UserModel.fromJsonUserDetails(response);
+          await _hiveManager.userModelBox.put(userKey, user);
+
+          return user;
+        }
+      }
+
+      if (response['success'] == true) {
+        logger.i('Inside success == true block');
+        final user = UserModel.fromJsonUserDetails(response);
+        await _hiveManager.userModelBox.put(userKey, user);
+        await _hiveManager.userModelBox.flush();
+        return user;
+      }
+
+      return null;
+    } catch (e) {
+      logger.e('Error in fetchUserDetails: $e');
+      throw e.toString();
+    }
   }
 
 }

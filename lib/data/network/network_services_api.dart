@@ -106,42 +106,42 @@ class NetworkServicesApi implements BaseApiService {
   dynamic returnResponse(http.Response response) {
     logger.i(response.statusCode);
     logger.i(response.body);
+
+    dynamic jsonResponse = json.decode(response.body);
+    logger.i('Parsed Response: $jsonResponse');
+
     switch (response.statusCode) {
       case 200:
-        dynamic jsonResponse = json.decode(response.body);
         return jsonResponse;
       case 201:
-        dynamic jsonResponse = json.decode(response.body);
         return jsonResponse;
       case 400:
-        dynamic jsonResponse = json.decode(response.body);
         return jsonResponse;
       case 401:
-        dynamic jsonResponse = json.decode(response.body);
         logger.i('401 Response: $jsonResponse');
-        // If it's unverified email case
-        if (jsonResponse['message'].contains('not yet verified') &&
-            jsonResponse['data']?['token'] != null) {
+
+        if (jsonResponse['message']?.contains('not verified')) {
           logger.i('Unverified email case detected');
-          return jsonResponse; // Just return the response for processing
+          return jsonResponse;
         }
+
         throw UnauthorisedException(jsonResponse['message']);
+
       case 403:
-        dynamic jsonResponse = json.decode(response.body);
-        // When user tries to access something without email verification
-        if (jsonResponse['message'].contains('not yet verified')) {
-          throw UnauthorisedException(jsonResponse['message']);
+        if (jsonResponse['message']?.contains('not verified')) {
+          return jsonResponse;
         }
         throw UnauthorisedException(jsonResponse['message']);
+
       case 404:
-        dynamic jsonResponse = json.decode(response.body);
         if (jsonResponse['success'] == false) {
           throw BadRequestException(jsonResponse['message']);
         }
         return jsonResponse;
+
       case 500:
-        dynamic jsonResponse = json.decode(response.body);
         throw FetchDataException(jsonResponse['message']);
+
       default:
         throw UnauthorisedException();
     }

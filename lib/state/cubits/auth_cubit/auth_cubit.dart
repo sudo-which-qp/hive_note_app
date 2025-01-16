@@ -18,7 +18,7 @@ class AuthCubit extends Cubit<AuthState> {
     required AuthRepository authRepository,
   })  : _authRepository = authRepository,
         super(AuthInitial()) {
-    checkAuthStatus();
+    _loadInitialState();
   }
 
   void saveAttemptedRoute(String route) {
@@ -31,14 +31,52 @@ class AuthCubit extends Cubit<AuthState> {
     return route;
   }
 
+  Future<void> _loadInitialState() async {
+    final token = _authRepository.getCurrentUserToken();
+    final user = _authRepository.getCurrentUser();
+
+    if (token == null) {
+      emit(AuthUnauthenticated());
+      return;
+    }
+
+    if (user != null) {
+      logger.i('Email of user: ${user.emailVerified}');
+      if (user.emailVerified == null || user.emailVerified == 'null') {
+        emit(AuthEmailUnverified(user));
+      } else {
+        emit(AuthAuthenticated(user));
+      }
+    }
+
+    checkAuthStatus();
+  }
+
   Future<void> checkAuthStatus() async {
     final token = _authRepository.getCurrentUserToken();
     if (token != null) {
-      final user = _authRepository.getCurrentUser();
-      if (user?.emailVerified == null || user?.emailVerified == 'null') {
-        emit(AuthEmailUnverified(user!));
-      } else {
-        emit(AuthAuthenticated(user!));
+      try {
+        final freshUserData = await _authRepository.fetchUserDetails();
+
+        if (freshUserData?.emailVerified == null ||
+            freshUserData?.emailVerified == 'null') {
+          emit(AuthEmailUnverified(freshUserData!));
+        } else {
+          emit(AuthAuthenticated(freshUserData!));
+        }
+      } catch (e) {
+
+        if (e.toString().contains('not verified')) {
+          final user = _authRepository.getCurrentUser();
+          if (user != null) {
+            emit(AuthEmailUnverified(user));
+          }
+        } else if (e.toString().contains('suspended')) {
+          emit(const AuthError('Account suspended'));
+          await _authRepository.logout();
+        } else {
+          emit(AuthError(e.toString()));
+        }
       }
     } else {
       emit(AuthUnauthenticated());
@@ -116,12 +154,48 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
-  Future<void> resendVerificationCode() async {
+  Future<void> resendVerificationCode({String? email}) async {
     emit(AuthLoading());
     try {
-      await _authRepository.resendVerificationCode();
-      emit(AuthEmailUnverified(_authRepository.getCurrentUser()!));
+      if(email != null) {
+        await _authRepository.resendVerificationCode(email: email);
+        emit(AuthInitial());
+        showSuccess('Code sent');
+      } else {
+        await _authRepository.resendVerificationCode();
+        emit(AuthEmailUnverified(_authRepository.getCurrentUser()!));
+        showSuccess('Code sent');
+      }
+    } catch (e) {
+      if (e is NoInternetException) {
+        emit(const AuthError('No internet connection'));
+      } else {
+        emit(AuthError(e.toString()));
+      }
+    }
+  }
+
+  Future<void> forgotPassword(String email) async {
+    emit(AuthLoading());
+    try {
+      await _authRepository.forgotPassword(email);
+      emit(AuthSuccess());
       showSuccess('Code sent');
+    } catch (e) {
+      if (e is NoInternetException) {
+        emit(const AuthError('No internet connection'));
+      } else {
+        emit(AuthError(e.toString()));
+      }
+    }
+  }
+
+  Future<void> resetPassword(String otpCode, String newPassword) async {
+    emit(AuthLoading());
+    try {
+      await _authRepository.resetPassword(otpCode, newPassword);
+      emit(AuthSuccess());
+      showSuccess('Password reset');
     } catch (e) {
       if (e is NoInternetException) {
         emit(const AuthError('No internet connection'));

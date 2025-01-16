@@ -5,6 +5,7 @@ import 'package:note_app/helpers/wrapper.dart';
 import 'package:note_app/presentation/views.dart';
 import 'package:note_app/services/service_locator.dart';
 import 'package:note_app/state/cubits/auth_cubit/auth_cubit.dart';
+import 'package:note_app/utils/const_values.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -14,27 +15,24 @@ class Routes {
 
 
     if (RoutesGuard.requiresAuth(settings.name)) {
-      if (authCubit.state is! AuthAuthenticated) {
-        authCubit.saveAttemptedRoute(settings.name!);
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
-      }
-    }
-
-    if (RoutesGuard.requiresEmailVerification(settings.name)) {
       if (state is AuthEmailUnverified) {
+        return MaterialPageRoute(
+          builder: (_) => const VerifyCode(from: 'protected_route'),
+          maintainState: true,  // Preserve route state
+        );
+      }
+
+      if (state is! AuthAuthenticated) {
         authCubit.saveAttemptedRoute(settings.name!);
         return MaterialPageRoute(
-          builder: (_) => VerifyCode(from: args!['from']),
+          builder: (_) => const LoginScreen(),
+          maintainState: true,
         );
       }
     }
 
-    switch (settings.name) {
-      // Middleware Wrapper
-      case RoutesName.wrapper:
-        return MaterialPageRoute(builder: (_) => const Wrapper());
-      // ends here
 
+    switch (settings.name) {
       //
       case RoutesName.home_screen:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
