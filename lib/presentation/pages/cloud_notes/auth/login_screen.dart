@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
           // Get saved route and navigate
           final attemptedRoute =
               context.read<AuthCubit>().getAndClearAttemptedRoute();
-          navigateEndTo(context, destination: attemptedRoute ?? RoutesName.cloud_notes);
+          navigateReplaceTo(context, destination: attemptedRoute ?? RoutesName.cloud_notes);
         } else if(state is AuthEmailUnverified) {
           navigateReplaceTo(context, destination: RoutesName.verify_code_screen, arguments: {
             'from': 'login',

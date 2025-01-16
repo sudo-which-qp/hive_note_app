@@ -212,7 +212,6 @@ class AuthRepository {
       }
 
       if (response['success'] == true) {
-        logger.i('Inside success == true block');
         final user = UserModel.fromJsonUserDetails(response);
         await _hiveManager.userModelBox.put(userKey, user);
         await _hiveManager.userModelBox.flush();

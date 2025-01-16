@@ -5,6 +5,7 @@ import 'package:note_app/app/src/app.dart';
 import 'package:note_app/helpers/hive_manager.dart';
 import 'package:note_app/services/service_locator.dart';
 import 'package:note_app/state/cubits/auth_cubit/auth_cubit.dart';
+import 'package:note_app/state/cubits/cloud_note_cubit/cloud_note_cubit.dart';
 import 'package:note_app/state/cubits/note_style_cubit/note_style_cubit.dart';
 import 'package:note_app/state/cubits/play_button_cubit/play_button_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
@@ -45,6 +46,9 @@ void main() async {
         ),
         BlocProvider<AuthCubit>(
           create: (context) => getIt<AuthCubit>(),
+        ),
+        BlocProvider<CloudNoteCubit>(
+          create: (context) => getIt<CloudNoteCubit>(),
         ),
       ],
       child: const App(),

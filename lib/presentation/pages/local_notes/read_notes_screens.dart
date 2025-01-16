@@ -1,17 +1,21 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:note_app/config/router/navigates_to.dart';
 import 'package:note_app/config/router/routes_name.dart';
 import 'package:note_app/data/models/local_note_model/note_model.dart';
 import 'package:note_app/helpers/hive_manager.dart';
+import 'package:note_app/state/cubits/auth_cubit/auth_cubit.dart';
+import 'package:note_app/state/cubits/cloud_note_cubit/cloud_note_cubit.dart';
 import 'package:note_app/state/cubits/play_button_cubit/play_button_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
 import 'package:note_app/utils/colors/m_colors.dart';
 import 'package:note_app/utils/const_values.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:note_app/utils/tools/message_dialog.dart';
 import 'package:provider/provider.dart';
 
 class ReadNotesScreen extends StatefulWidget {
@@ -187,94 +191,121 @@ class _ReadNotesScreenState extends State<ReadNotesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final hiveData = HiveManager().userModelBox;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Read Note',
+    return BlocListener<CloudNoteCubit, CloudNoteState>(
+      listener: (context, state) {
+        if (state is CloudNoteSuccess) {
+          Navigator.pop(context);
+        } else if (state is CloudError) {
+          showError(state.message);
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Read Note',
+          ),
+          shadowColor: Colors.transparent,
+          backgroundColor: Colors.transparent,
+          centerTitle: true,
+          actions: <Widget>[
+            BlocBuilder<AuthCubit, AuthState>(
+              builder: (context, state) {
+                if (state is AuthAuthenticated) {
+                  return BlocBuilder<CloudNoteCubit, CloudNoteState>(
+                    builder: (context, state) {
+                      return state is CloudNoteLoading
+                          ? SizedBox(
+                              width: 20.w,
+                              height: 20.w,
+                              child: CircularProgressIndicator(
+                                color: context
+                                            .watch<ThemeCubit>()
+                                            .state
+                                            .isDarkTheme ==
+                                        false
+                                    ? AppColors.defaultBlack
+                                    : AppColors.defaultWhite,
+                              ),
+                            )
+                          : IconButton(
+                              icon: const Icon(Icons.cloud_upload_outlined),
+                              onPressed: state is! CloudNoteLoading
+                                  ? () {
+                                      context
+                                          .read<CloudNoteCubit>()
+                                          .moveToCloud(
+                                            '${widget.note!.title}',
+                                            '${widget.note!.notes}',
+                                            widget.noteKey!,
+                                          );
+                                    }
+                                  : null,
+                            );
+                    },
+                  );
+                } else {
+                  return const SizedBox();
+                }
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.mode_edit),
+              onPressed: () {
+                Navigator.pop(context);
+                navigateTo(context,
+                    destination: RoutesName.edit_notes_screen,
+                    arguments: {
+                      'notes': widget.note,
+                      'noteKey': widget.noteKey,
+                    });
+              },
+            )
+          ],
         ),
-        shadowColor: Colors.transparent,
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        actions: <Widget>[
-          isLoading == false
-              ? hiveData.get(tokenKey) == null
-                  ? const SizedBox()
-                  : IconButton(
-                      icon: const Icon(Icons.cloud_upload_outlined),
-                      onPressed: isLoading == false
-                          ? () {
-                              // uploadNote();
-                            }
-                          : null,
-                    )
-              : SizedBox(
-                  width: 20.w,
-                  height: 20.w,
-                  child: CircularProgressIndicator(
-                    color:
-                        context.watch<ThemeCubit>().state.isDarkTheme == false
-                            ? AppColors.defaultBlack
-                            : AppColors.defaultWhite,
-                  ),
-                ),
-          IconButton(
-            icon: const Icon(Icons.mode_edit),
-            onPressed: () {
-              Navigator.pop(context);
-              navigateTo(context,
-                  destination: RoutesName.edit_notes_screen,
-                  arguments: {
-                    'notes': widget.note,
-                    'noteKey': widget.noteKey,
-                  });
-            },
-          )
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                child: Center(
-                  child: Text(
-                    '${widget.note!.title}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  child: Center(
+                    child: Text(
+                      '${widget.note!.title}',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      softWrap: true,
+                      textAlign: TextAlign.center,
                     ),
-                    softWrap: true,
-                    textAlign: TextAlign.center,
                   ),
                 ),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              showText(),
-            ],
+                const SizedBox(
+                  height: 15,
+                ),
+                showText(),
+              ],
+            ),
           ),
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton:
+            context.watch<PlayButtonCubit>().state.canPlay == false
+                ? FloatingActionButton(
+                    backgroundColor: Colors.white60,
+                    onPressed: () {
+                      ttsState == TtsState.stopped ? _speak() : _stop();
+                    },
+                    child: Icon(
+                      ttsState == TtsState.stopped
+                          ? Icons.play_circle_outline
+                          : Icons.stop_circle_outlined,
+                      color: Colors.black45,
+                    ),
+                  )
+                : null,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton:
-          context.watch<PlayButtonCubit>().state.canPlay == false
-              ? FloatingActionButton(
-                  backgroundColor: Colors.white60,
-                  onPressed: () {
-                    ttsState == TtsState.stopped ? _speak() : _stop();
-                  },
-                  child: Icon(
-                    ttsState == TtsState.stopped
-                        ? Icons.play_circle_outline
-                        : Icons.stop_circle_outlined,
-                    color: Colors.black45,
-                  ),
-                )
-              : null,
     );
   }
 }

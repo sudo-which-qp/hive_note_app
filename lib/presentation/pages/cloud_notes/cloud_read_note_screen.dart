@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:note_app/data/models/cloud_note_models/cloud_note_model.dart';
-import 'package:note_app/presentation/pages/cloud_notes/cloud_edit_note.dart';
 import 'package:note_app/state/cubits/play_button_cubit/play_button_cubit.dart';
 import 'package:note_app/utils/const_values.dart';
 import 'package:provider/provider.dart';

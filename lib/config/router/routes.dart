@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/config/router/route_guard.dart';
 import 'package:note_app/config/router/routes_name.dart';
-import 'package:note_app/helpers/wrapper.dart';
 import 'package:note_app/presentation/views.dart';
 import 'package:note_app/services/service_locator.dart';
 import 'package:note_app/state/cubits/auth_cubit/auth_cubit.dart';
