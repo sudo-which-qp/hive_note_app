@@ -44,12 +44,12 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_tts: 0f492aab6accf87059b72354fcb4ba934304771d
-  fluttertoast: 9f2f8e81bb5ce18facb9748d7855bf5a756fe3db
-  package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
+  fluttertoast: e9a18c7be5413da53898f660530c56f35edfba9c
+  package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e
 
 PODFILE CHECKSUM: 68b745aaca7f4f7b981818ae727abd881eccad0d
 
-COCOAPODS: 1.15.0
+COCOAPODS: 1.16.2

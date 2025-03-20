@@ -77,17 +77,9 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notes'),
-        actions: [
-          if (Platform.isIOS)
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(CupertinoIcons.add_circled),
-            ),
-        ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Platform.isAndroid
-          ? FloatingActionButton(
+      floatingActionButton:FloatingActionButton(
               onPressed: () {
                 navigateReplaceTo(context,
                     destination: RoutesName.cloud_create_notes_screen);
@@ -98,15 +90,16 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
                       : AppColors.primaryColor,
               tooltip: 'Add Note',
               child: Icon(Icons.add, color: AppColors.defaultBlack),
-            )
-          : null,
+            ),
       body: BlocBuilder<CloudNoteCubit, CloudNoteState>(
         builder: (context, state) {
+
           if (state is CloudNoteLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
           if (state is CloudNoteLoaded) {
+
             if (state.notes.isEmpty) {
               return const Center(
                 child: Column(
@@ -126,7 +119,7 @@ class _CloudNotesScreenState extends State<CloudNotesScreen> {
 
             return SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 30),
                 child: MasonryGridView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   primary: false,
