@@ -15,7 +15,6 @@ import 'package:note_app/utils/const_values.dart';
 import 'package:note_app/utils/tools/message_dialog.dart';
 import 'package:note_app/utils/tools/sized_box_ex.dart';
 import 'package:otp_text_field_v2/otp_text_field_v2.dart';
-import 'package:provider/provider.dart';
 
 class VerifyCode extends StatefulWidget {
   final String? email;

@@ -10,7 +10,7 @@ import 'package:note_app/state/cubits/cloud_note_cubit/cloud_note_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
 import 'package:note_app/utils/const_values.dart';
 import 'package:note_app/utils/tools/message_dialog.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CloudEditNote extends StatefulWidget {
   final CloudNoteModel? notes;
