@@ -9,7 +9,6 @@ import 'package:note_app/state/cubits/auth_cubit/auth_cubit.dart';
 import 'package:note_app/state/cubits/theme_cubit/theme_cubit.dart';
 import 'package:note_app/utils/colors/m_colors.dart';
 import 'package:note_app/utils/tools/message_dialog.dart';
-import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
