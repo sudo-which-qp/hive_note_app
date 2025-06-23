@@ -98,7 +98,7 @@ class _ReadNotesScreenState extends State<ReadNotesScreen> {
 
     storeData.put(key, noteM);
     Fluttertoast.showToast(
-      msg: 'Note Saved',
+      msg: 'Note Updated',
       toastLength: Toast.LENGTH_SHORT,
     );
     Navigator.pop(context);
@@ -120,7 +120,7 @@ class _ReadNotesScreenState extends State<ReadNotesScreen> {
 
     storeData.put(key, noteM);
     Fluttertoast.showToast(
-      msg: 'Note Saved',
+      msg: 'Note Updated',
       toastLength: Toast.LENGTH_SHORT,
     );
     Navigator.pop(context);

@@ -8,10 +8,10 @@ ThemeData buildLightTheme() => ThemeData.light().copyWith(
       iconTheme: IconThemeData(
         color: AppColors.defaultBlack,
       ),
-      cardTheme: const CardTheme(
+      cardTheme: const CardThemeData(
         color: Colors.white,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.primaryColor,
         titleTextStyle: const TextStyle(
           color: Colors.black,
@@ -56,10 +56,10 @@ ThemeData buildDarkTheme() => ThemeData.dark().copyWith(
       iconTheme: IconThemeData(
         color: AppColors.defaultWhite,
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: AppColors.cardColor,
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: Colors.grey[900],
         titleTextStyle: const TextStyle(
           color: Colors.white,
